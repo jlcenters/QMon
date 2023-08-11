@@ -10,6 +10,6 @@ public class Move
     public Move(MoveBase mBase)
     {
         Base = mBase;
-        PP = mBase.Pp;
+        PP = mBase.PP;
     }
 }

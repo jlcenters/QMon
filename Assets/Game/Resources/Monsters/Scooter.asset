@@ -25,13 +25,13 @@ MonoBehaviour:
   speed: 6
   learnableMoves:
   - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
-    level: 1
+    level: 0
   - moveBase: {fileID: 11400000, guid: 519d3b19ed7ab554890db5f1d1bef350, type: 2}
-    level: 1
+    level: 5
   - moveBase: {fileID: 11400000, guid: 7361d230522e0d44092f9f860979eb67, type: 2}
-    level: 1
+    level: 7
   - moveBase: {fileID: 11400000, guid: 89c226e0728f43245bf99d88c517ae67, type: 2}
-    level: 1
+    level: 10
   - moveBase: {fileID: 11400000, guid: b4849e32a8bf5bd4da77abf4d73c5f2e, type: 2}
-    level: 1
+    level: 15
   isFirst: 0

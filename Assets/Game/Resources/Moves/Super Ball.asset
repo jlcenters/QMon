@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveName: Super Ball
   description: Type changes depending on mon's element.
-  type: 0
+  type: 6
   power: 20
   accuracy: 100
   pp: 5
