@@ -915,7 +915,6 @@ MonoBehaviour:
   lvTxt: {fileID: 8880466904478050138}
   hpTxt: {fileID: 5140900406227978473}
   hpBar: {fileID: 6417117332090860379}
-  currHp: 0
 --- !u!1 &2434096865436037472
 GameObject:
   m_ObjectHideFlags: 0
@@ -1004,9 +1003,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23cdde0d2179ddb438ee8ba4d24463b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monBase: {fileID: 11400000, guid: c6ebcbfea745c6b4b81c72cbaef457e0, type: 2}
-  level: 7
+  monBase: {fileID: 11400000, guid: 1f2decb5db886b24687885894d6b7fb7, type: 2}
+  level: 10
   isPlayermon: 0
+  animDuration: 0.5
 --- !u!1 &2490733365862800883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1923,8 +1923,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   monBase: {fileID: 11400000, guid: c6ebcbfea745c6b4b81c72cbaef457e0, type: 2}
-  level: 5
+  level: 15
   isPlayermon: 1
+  animDuration: 0.5
 --- !u!1 &5617197923924529946
 GameObject:
   m_ObjectHideFlags: 0
@@ -2154,7 +2155,6 @@ MonoBehaviour:
   lvTxt: {fileID: 5617197924869539815}
   hpTxt: {fileID: 5617197924602829598}
   hpBar: {fileID: 7457580199573165732}
-  currHp: 0
 --- !u!1 &5617197924254975732
 GameObject:
   m_ObjectHideFlags: 0

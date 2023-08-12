@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56f90ebdbf5608c42b115face2233a4a, type: 3}
   m_Name: Frootford
   m_EditorClassIdentifier: 
-  monName: 
+  monName: Frootford
   description: 
   type: 3
   frontSprite: {fileID: 3597704810462396357, guid: 79c61d9500006b7458fe2989f025a629, type: 3}
@@ -23,8 +23,6 @@ MonoBehaviour:
   block: 6
   element: 3
   speed: 1
-  currHp: 0
-  currXp: 0
   learnableMoves:
   - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
     level: 1

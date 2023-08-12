@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Move
 {
+
+    //reference to base stats
     public MoveBase Base { get; set; }
+
+    //current PP out of base's total
     public int PP { get; set; }
 
     public Move(MoveBase mBase)

@@ -10,20 +10,24 @@ public class BattleHud : MonoBehaviour
     [SerializeField] TMP_Text lvTxt;
     [SerializeField] TMP_Text hpTxt;
     [SerializeField] HPBar hpBar;
-    public int currHp;
+
+    Monster monster;
 
     public void SetData(Monster mon)
     {
+        monster = mon;
+
         nameTxt.text = mon.MonBase.MonName;
         lvTxt.text = "lv " + mon.Level;
-        currHp = mon.Hp;
-        hpBar.SetHP((float)currHp / (float)mon.MaxHp);
+        hpBar.SetHP((float)mon.Hp / (float)mon.MaxHp);
         //TODO: decrement
-        hpTxt.text = currHp + "/" + mon.Hp;
-        Debug.Log("lv " + mon.Level + " current HP: " + currHp + "; normalized for HP bar: " + (float)currHp / (float)mon.MaxHp);
-
-
-
+        hpTxt.text = mon.Hp + "/" + mon.MaxHp;
+        Debug.Log("lv " + mon.Level + " current HP: " + mon.Hp + "; normalized for HP bar: " + (float)mon.Hp / (float)mon.MaxHp);
     }
 
+    public IEnumerator UpdateHP()
+    {
+        yield return hpBar.SetHPSmooth((float)monster.Hp / monster.MaxHp);
+        hpTxt.text = monster.Hp + "/" + monster.MaxHp;
+    }
 }

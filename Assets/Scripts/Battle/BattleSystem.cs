@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +17,7 @@ public enum BattleState
 
 
 
-
+//class
 public class BattleSystem : MonoBehaviour
 {
     //player details
@@ -37,12 +38,14 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
 
+    //bool to determine whether or not player won battle
+    public event Action<bool> OnBattleOver;
 
     //setup
-    private void Start()
+    public void StartBattle()
      {
          StartCoroutine(SetUpBattle());
-     }
+    }
     public IEnumerator SetUpBattle()
     {
         //display sprites and status HUDs
@@ -74,22 +77,103 @@ public class BattleSystem : MonoBehaviour
     }
     void PlayerMove()
     {
-        state = BattleState.PlayerMove;
-
         dialogueBox.EnableActionSelector(false);
         dialogueBox.EnableDialogueText(false);
         dialogueBox.EnableMoveSelector(true);
+
+        state = BattleState.PlayerMove;
+        Debug.Log("set move stuffs view");
     }
 
+    IEnumerator PreformPlayerMove()
+    {
+        state = BattleState.Busy;
+
+        var move = playerSprite.Mon.Moves[currentMove];
+        move.PP--;
+        yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
+        playerSprite.AttackAnimation();
+        yield return new WaitForSeconds(0.5f);
+        enemySprite.DamageAnimation();
+
+
+        var enemyDamage = enemySprite.Mon.TakeDamage(move, playerSprite.Mon);
+        yield return enemyHud.UpdateHP();
+        yield return ShowDamageDetails(enemyDamage);
+        //if enemy sprite fainted from the attack, display faint sequence; else, enemy's turn
+        if (enemyDamage.Fainted)
+        {
+            enemySprite.FaintAnimation();
+            yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} fainted!");
+
+            yield return new WaitForSeconds(2f);
+            OnBattleOver(true);
+        }
+        else
+        {
+            StartCoroutine(EnemyMove());
+        }
+    }
+
+    IEnumerator EnemyMove()
+    {
+        state = BattleState.EnemyMove;
+
+        var move = enemySprite.Mon.GetRandomMove();
+
+        yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
+        move.PP--;
+        enemySprite.AttackAnimation();
+        yield return new WaitForSeconds(0.5f);
+        playerSprite.DamageAnimation();
+
+
+        var playerDamage = playerSprite.Mon.TakeDamage(move, enemySprite.Mon);
+
+        yield return playerHud.UpdateHP();
+        yield return ShowDamageDetails(playerDamage);
+
+        //if player sprite fainted from the attack, display faint sequence; else, player action
+        if (playerDamage.Fainted)
+        {
+            playerSprite.FaintAnimation();
+            yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} fainted!");
+
+            yield return new WaitForSeconds(2f);
+            OnBattleOver(false);
+        }
+        else
+        {
+            PlayerAction();
+        }
+    }
+
+    IEnumerator ShowDamageDetails(DamageDetails details)
+    {
+        if(details.Critical > 1f)
+        {
+            yield return dialogueBox.TypeDialogue("A Critical Hit!");
+            yield return new WaitForSeconds(1f);
+        }
+        if(details.TypeEffectiveness > 1f)
+        {
+            yield return dialogueBox.TypeDialogue("It's super effective!");
+        }
+        if(details.TypeEffectiveness < 1f)
+        {
+            yield return dialogueBox.TypeDialogue("It's not very effective...");
+        }
+        yield return new WaitForSeconds(1f);
+    }
 
     //check current state
-    private void Update()
+    public void HandleUpdate()
     {
         if(state == BattleState.PlayerAction)
         {
             HandleActionSelection();
         }
-        if(state == BattleState.PlayerMove)
+        else if(state == BattleState.PlayerMove)
         {
             HandleMoveSelection();
         }
@@ -206,5 +290,13 @@ public class BattleSystem : MonoBehaviour
 
         //highlight selection
         dialogueBox.UpdateMoveSelection(currentMove, playerSprite.Mon.Moves[currentMove]);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Move selected!");
+            dialogueBox.EnableMoveSelector(false);
+            dialogueBox.EnableDialogueText(true);
+            StartCoroutine(PreformPlayerMove());
+        }
     }
 }

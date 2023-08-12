@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*
+ * This has the same function as the Monster Base, and is stored in the same location
+ */
 [CreateAssetMenu(fileName = "MoveBase", menuName = "Monster/Create new Move")]
 public class MoveBase : ScriptableObject
 {
@@ -38,5 +42,19 @@ public class MoveBase : ScriptableObject
     public MonType Type
     {
         get { return type; }
+    }
+    public bool IsSpecial
+    {
+        get
+        {
+            if(type == MonType.Fire || type == MonType.Water || type == MonType.Grass || type == MonType.Ghost || type == MonType.Special)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

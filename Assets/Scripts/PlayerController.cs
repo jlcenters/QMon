@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +15,10 @@ public class PlayerController : MonoBehaviour
 
     Vector2 userInput; 
     Animator ani;
+
+
+    public event Action OnEncounter;
+
     //TODO: potentially add instance of current active mon
 
 
@@ -21,7 +26,7 @@ public class PlayerController : MonoBehaviour
     {
         ani = GetComponent<Animator>();
     }
-    void Update()
+    public void HandleUpdate()
     {
         if (!isMoving)
         {
@@ -90,12 +95,13 @@ public class PlayerController : MonoBehaviour
     {
         if(Physics2D.OverlapCircle(transform.position, 0.2f, longGrassLayer))
         {
-            if(Random.Range(1, 101) <= 10){
-                Debug.Log("FIGHT");
-            }
-            else
-            {
-                Debug.Log("Nothing here...");
+            if(UnityEngine.Random.Range(1, 101) <= 10){
+                isMoving = false;
+                //will utilize the observer design pattern to avoid a circular dependency
+                //create event in player controller
+                //game controller will subscribe
+                //game objects subscribed will be notified
+                OnEncounter();
             }
         }
     }
