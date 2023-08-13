@@ -38,21 +38,32 @@ public class BattleSystem : MonoBehaviour
     int currentAction;
     int currentMove;
 
+    //monster select reference
+    [SerializeField] PartyScreen partyScreen;
+
     //bool to determine whether or not player won battle
     public event Action<bool> OnBattleOver;
 
+    MonParty playerParty;
+    Monster wildMon;
+
     //setup
-    public void StartBattle()
+    public void StartBattle(MonParty party, Monster encounter)
      {
-         StartCoroutine(SetUpBattle());
+        playerParty = party;
+        wildMon = encounter;
+        StartCoroutine(SetUpBattle());
     }
     public IEnumerator SetUpBattle()
     {
         //display sprites and status HUDs
-        playerSprite.Setup();
+        playerSprite.Setup(playerParty.GetHealthyMon());
         playerHud.SetData(playerSprite.Mon);
-        enemySprite.Setup();
+        enemySprite.Setup(wildMon);
         enemyHud.SetData(enemySprite.Mon);
+
+        //set up party screen for if player wants to swap out their mons
+        partyScreen.Init();
 
         //assign moves to Move Selector
         dialogueBox.SetMoveNames(playerSprite.Mon.Moves);
@@ -72,8 +83,13 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.PlayerAction;
 
-        StartCoroutine(dialogueBox.TypeDialogue("What will you do?"));
+        dialogueBox.SetDialogue("What will you do?");
         dialogueBox.EnableActionSelector(true);
+    }
+    void OpenPartyScreen()
+    {
+        partyScreen.SetPartyData(playerParty.Monsters);
+        partyScreen.gameObject.SetActive(true);
     }
     void PlayerMove()
     {
@@ -140,7 +156,24 @@ public class BattleSystem : MonoBehaviour
             yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} fainted!");
 
             yield return new WaitForSeconds(2f);
-            OnBattleOver(false);
+            var nextMon = playerParty.GetHealthyMon();
+            //if there is no healthy mon, exit battle; else, send out next healthy mon
+            if(nextMon == null)
+            {
+                OnBattleOver(false);
+            }
+            else
+            {
+                playerSprite.Setup(nextMon);
+
+                playerHud.SetData(nextMon);
+                dialogueBox.SetMoveNames(nextMon.Moves);
+
+                StartCoroutine(dialogueBox.TypeDialogue($"Go, {nextMon.MonBase.MonName}!"));
+
+                yield return new WaitForSeconds(1f);
+                PlayerAction();
+            }
         }
         else
         {
@@ -224,13 +257,11 @@ public class BattleSystem : MonoBehaviour
                 {
                     //fight
                     PlayerMove();
-                    Debug.Log("Fight!");
-
                 }
                 else
                 {
                     //monsters
-                    Debug.Log("swap mons");
+                    OpenPartyScreen();
                 }
             }
             else
@@ -260,7 +291,6 @@ public class BattleSystem : MonoBehaviour
             if (currentMove < playerSprite.Mon.Moves.Count - 1)
             {
                 currentMove++;
-                Debug.Log("moved right");
             }
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -268,7 +298,6 @@ public class BattleSystem : MonoBehaviour
             if (currentMove > 0)
             {
                 currentMove--;
-                Debug.Log("moved left");
             }
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -276,27 +305,32 @@ public class BattleSystem : MonoBehaviour
             if (currentMove < playerSprite.Mon.Moves.Count - 2)
             {
                 currentMove += 2;
-                Debug.Log("moved down");
             }
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if (currentAction > 1)
+            if (currentMove > 1)
             {
                 currentMove -= 2;
-                Debug.Log("moved up");
             }
         }
 
         //highlight selection
         dialogueBox.UpdateMoveSelection(currentMove, playerSprite.Mon.Moves[currentMove]);
 
+        //if spacebar pressed, preform player move; else, if backspace pressed, go back to action selection
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("Move selected!");
             dialogueBox.EnableMoveSelector(false);
             dialogueBox.EnableDialogueText(true);
             StartCoroutine(PreformPlayerMove());
+        }
+        else if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            dialogueBox.EnableMoveSelector(false);
+            dialogueBox.EnableActionSelector(true);
+            dialogueBox.EnableDialogueText(true);
+            state = BattleState.PlayerAction;
         }
     }
 }

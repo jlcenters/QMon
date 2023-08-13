@@ -2,14 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class Monster
 {
-
+    //list references
+    [SerializeField] MonsterBase monBase;
+    [SerializeField] int level;
     //reference to base stats
-    public MonsterBase MonBase { get; set; }
+    public MonsterBase MonBase { 
+        get {
+            return monBase;
+        } 
+    }
 
     //current stats compared to base
-    public int Level { get; set; }
+    public int Level {
+        get {
+            return level;
+        }
+    }
     public int Hp { get; set; }
     public int Xp { get; set; }
 
@@ -17,11 +28,9 @@ public class Monster
     public List<Move> Moves { get; set; }
 
     
-    public Monster(MonsterBase mBase, int mLevel)
+    public void Init()
     {
         //grabs references to base and stats
-        MonBase = mBase;
-        Level = mLevel;
         Hp = MaxHp;
 
         //grabbing available moves

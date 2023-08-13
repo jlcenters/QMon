@@ -29,7 +29,9 @@ public class GameController : MonoBehaviour
         battleSystem.gameObject.SetActive(true);
         mainCamera.gameObject.SetActive(false);
 
-        battleSystem.StartBattle();
+        var playerParty = playerController.GetComponent<MonParty>();
+        var wildMon = FindObjectOfType<MapArea>().GetComponent<MapArea>().GetRandomWildMon();
+        battleSystem.StartBattle(playerParty, wildMon);
         
     }
 

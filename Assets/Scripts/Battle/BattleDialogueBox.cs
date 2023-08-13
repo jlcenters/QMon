@@ -26,7 +26,7 @@ public class BattleDialogueBox : MonoBehaviour
 
 
 
-    // IEnumerator for displaying the text in dialogue box over time
+    // Displaying text in text boxes
     public IEnumerator TypeDialogue(string message)
     {
         //start as an empty box
@@ -40,7 +40,10 @@ public class BattleDialogueBox : MonoBehaviour
             yield return new WaitForSeconds(1f/lettersPerSecond);
         }
     }
-
+    public void SetDialogue(string txt)
+    {
+        dialogue.text = txt;
+    }
 
     //Enabling / Disabling the different views
     public void EnableDialogueText(bool isEnabled)
@@ -103,22 +106,12 @@ public class BattleDialogueBox : MonoBehaviour
             if(i < moves.Count)
             {
                 moveTexts[i].text = moves[i].Base.MoveName;
-                Debug.Log("move " + i + " added");
             }
             else
             {
                 moveTexts[i].text = "-";
-                Debug.Log("ignored " + i);
             }
         }
     }
 
-
-    /* NOT USED
-     * 
-    public void SetDialogue(string txt)
-    {
-        dialogue.text = txt;
-    }
-    */
 }

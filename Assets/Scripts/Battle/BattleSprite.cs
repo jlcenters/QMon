@@ -6,8 +6,8 @@ using DG.Tweening;
 
 public class BattleSprite : MonoBehaviour
 {
-    [SerializeField] MonsterBase monBase;
-    [SerializeField] int level;
+    /*[SerializeField] MonsterBase monBase;
+    [SerializeField] int level;*/
     [SerializeField] bool isPlayermon;
     public float animDuration;
 
@@ -26,9 +26,9 @@ public class BattleSprite : MonoBehaviour
 
     public Monster Mon { get; set; }
 
-    public void Setup()
+    public void Setup(Monster mon)
     {
-        Mon = new Monster(monBase, level);
+        Mon = mon;
 
         if (isPlayermon)
         {
