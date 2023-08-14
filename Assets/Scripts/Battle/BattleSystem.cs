@@ -9,15 +9,17 @@ using UnityEngine;
 public enum BattleState
 {
     Start,
-    PlayerAction,
-    PlayerMove,
-    EnemyMove,
-    Busy
+    ActionSelection,
+    PartyScreen,
+    MoveSelection,
+    PreformMove,
+    Busy,
+    BattleOver
 }
 
 
 
-//class
+//Class
 public class BattleSystem : MonoBehaviour
 {
     //player details
@@ -37,6 +39,7 @@ public class BattleSystem : MonoBehaviour
     //view references
     int currentAction;
     int currentMove;
+    int currentPartyMember;
 
     //monster select reference
     [SerializeField] PartyScreen partyScreen;
@@ -47,13 +50,16 @@ public class BattleSystem : MonoBehaviour
     MonParty playerParty;
     Monster wildMon;
 
-    //setup
+
+
+    //Setup
     public void StartBattle(MonParty party, Monster encounter)
      {
         playerParty = party;
         wildMon = encounter;
         StartCoroutine(SetUpBattle());
     }
+
     public IEnumerator SetUpBattle()
     {
         //display sprites and status HUDs
@@ -78,106 +84,110 @@ public class BattleSystem : MonoBehaviour
     }
 
 
+
     //State Methods
     void PlayerAction()
     {
-        state = BattleState.PlayerAction;
+        state = BattleState.ActionSelection;
 
         dialogueBox.SetDialogue("What will you do?");
         dialogueBox.EnableActionSelector(true);
     }
+
+    void BattleOver(bool isWin)
+    {
+        state = BattleState.BattleOver;
+        OnBattleOver(isWin);
+    }
+
     void OpenPartyScreen()
     {
+        state = BattleState.PartyScreen;
+
         partyScreen.SetPartyData(playerParty.Monsters);
         partyScreen.gameObject.SetActive(true);
     }
-    void PlayerMove()
+
+    void MoveSelection()
     {
         dialogueBox.EnableActionSelector(false);
         dialogueBox.EnableDialogueText(false);
         dialogueBox.EnableMoveSelector(true);
 
-        state = BattleState.PlayerMove;
+        state = BattleState.MoveSelection;
         Debug.Log("set move stuffs view");
     }
 
-    IEnumerator PreformPlayerMove()
+    IEnumerator PlayerMove()
     {
-        state = BattleState.Busy;
+        state = BattleState.PreformMove;
 
+        //get move and preform Run Move method
         var move = playerSprite.Mon.Moves[currentMove];
-        move.PP--;
-        yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
-        playerSprite.AttackAnimation();
-        yield return new WaitForSeconds(0.5f);
-        enemySprite.DamageAnimation();
+        yield return RunMove(playerSprite, enemySprite, move);
 
-
-        var enemyDamage = enemySprite.Mon.TakeDamage(move, playerSprite.Mon);
-        yield return enemyHud.UpdateHP();
-        yield return ShowDamageDetails(enemyDamage);
-        //if enemy sprite fainted from the attack, display faint sequence; else, enemy's turn
-        if (enemyDamage.Fainted)
-        {
-            enemySprite.FaintAnimation();
-            yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} fainted!");
-
-            yield return new WaitForSeconds(2f);
-            OnBattleOver(true);
-        }
-        else
-        {
-            StartCoroutine(EnemyMove());
-        }
+        StartCoroutine(EnemyMove());
     }
 
     IEnumerator EnemyMove()
     {
-        state = BattleState.EnemyMove;
+        state = BattleState.PreformMove;
 
+        //get move and preform Run Move method
         var move = enemySprite.Mon.GetRandomMove();
+        yield return RunMove(enemySprite, playerSprite, move);
+            
+        PlayerAction();
+    }
 
-        yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
+
+
+    //Move State Methods
+    IEnumerator RunMove(BattleSprite srcSprite, BattleSprite targetSprite, Move move)
+    {
+        //Run dialogue and animations, and reduce PP
+        yield return dialogueBox.TypeDialogue($"{srcSprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
         move.PP--;
-        enemySprite.AttackAnimation();
+        srcSprite.AttackAnimation();
         yield return new WaitForSeconds(0.5f);
-        playerSprite.DamageAnimation();
+        targetSprite.DamageAnimation();
 
 
-        var playerDamage = playerSprite.Mon.TakeDamage(move, enemySprite.Mon);
+        var targetDamage = targetSprite.Mon.TakeDamage(move, srcSprite.Mon);
 
         yield return playerHud.UpdateHP();
-        yield return ShowDamageDetails(playerDamage);
+        yield return ShowDamageDetails(targetDamage);
 
-        //if player sprite fainted from the attack, display faint sequence; else, player action
-        if (playerDamage.Fainted)
+        //if Target Sprite fainted from the attack, display faint sequence
+        if (targetDamage.Fainted)
         {
-            playerSprite.FaintAnimation();
-            yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} fainted!");
+            targetSprite.FaintAnimation();
+            yield return dialogueBox.TypeDialogue($"{targetSprite.Mon.MonBase.MonName} fainted!");
+            yield return new WaitForSeconds(1f);
+            CheckForBattleOver(targetSprite);
+        }
+    }
 
-            yield return new WaitForSeconds(2f);
+    void CheckForBattleOver(BattleSprite faintedUnit)
+    {
+        //if Player Sprite, check party; else, end battle and Player wins
+        if (faintedUnit.IsPlayermon)
+        {
             var nextMon = playerParty.GetHealthyMon();
-            //if there is no healthy mon, exit battle; else, send out next healthy mon
-            if(nextMon == null)
+            //if there is no healthy mon, end battle and Player loses; else, select next mon to send out
+            if (nextMon == null)
             {
                 OnBattleOver(false);
             }
             else
             {
-                playerSprite.Setup(nextMon);
-
-                playerHud.SetData(nextMon);
-                dialogueBox.SetMoveNames(nextMon.Moves);
-
-                StartCoroutine(dialogueBox.TypeDialogue($"Go, {nextMon.MonBase.MonName}!"));
-
-                yield return new WaitForSeconds(1f);
-                PlayerAction();
+                OpenPartyScreen();
+                Debug.Log("current state: " + state.ToString());
             }
         }
         else
         {
-            PlayerAction();
+            OnBattleOver(true);
         }
     }
 
@@ -199,18 +209,26 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
-    //check current state
+
+
+    //Update
     public void HandleUpdate()
     {
-        if(state == BattleState.PlayerAction)
+        if(state == BattleState.ActionSelection)
         {
             HandleActionSelection();
         }
-        else if(state == BattleState.PlayerMove)
+        else if(state == BattleState.MoveSelection)
         {
             HandleMoveSelection();
         }
+        else if(state == BattleState.PartyScreen)
+        {
+            HandlePartySelection();
+        }
     }
+
+
 
     //Handle Selection Boxes
     void HandleActionSelection()
@@ -256,7 +274,7 @@ public class BattleSystem : MonoBehaviour
                 if (currentAction == 0)
                 {
                     //fight
-                    PlayerMove();
+                    MoveSelection();
                 }
                 else
                 {
@@ -288,9 +306,9 @@ public class BattleSystem : MonoBehaviour
         //determine which move the player is about to select
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (currentMove < playerSprite.Mon.Moves.Count - 1)
+            if (currentMove < this.playerSprite.Mon.Moves.Count - 1)
             {
-                currentMove++;
+                    currentMove++;
             }
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -302,9 +320,9 @@ public class BattleSystem : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (currentMove < playerSprite.Mon.Moves.Count - 2)
+            if (currentMove < this.playerSprite.Mon.Moves.Count - 2)
             {
-                currentMove += 2;
+                    currentMove += 2;
             }
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -315,22 +333,116 @@ public class BattleSystem : MonoBehaviour
             }
         }
 
-        //highlight selection
-        dialogueBox.UpdateMoveSelection(currentMove, playerSprite.Mon.Moves[currentMove]);
+            //highlight selection
+            dialogueBox.UpdateMoveSelection(currentMove, this.playerSprite.Mon.Moves[currentMove]);
 
         //if spacebar pressed, preform player move; else, if backspace pressed, go back to action selection
         if (Input.GetKeyDown(KeyCode.Space))
         {
             dialogueBox.EnableMoveSelector(false);
             dialogueBox.EnableDialogueText(true);
-            StartCoroutine(PreformPlayerMove());
+            StartCoroutine(PlayerMove());
         }
         else if (Input.GetKeyDown(KeyCode.Backspace))
         {
             dialogueBox.EnableMoveSelector(false);
             dialogueBox.EnableActionSelector(true);
             dialogueBox.EnableDialogueText(true);
-            state = BattleState.PlayerAction;
+            state = BattleState.ActionSelection;
+        }
+    }
+
+    void HandlePartySelection()
+    {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            currentPartyMember++;
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            currentPartyMember--;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            currentPartyMember += 2;
+
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            currentPartyMember -= 2;
+        }
+        //will check to make sure selection is within range, else it will add/subtract accordingly
+        currentPartyMember = Mathf.Clamp(currentPartyMember, 0, playerParty.Monsters.Count - 1);
+
+        //highlight selection
+        partyScreen.UpdateMonsterSelection(currentPartyMember);
+
+        //if selected hp is empty or the selected mon is the same as the one currently out, do not switch and send message
+        //otherwise, swap out current mon for new mon and begin Enemy Move
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            var selectedMember = playerParty.Monsters[currentPartyMember];
+            if(selectedMember.Hp <= 0)
+            {
+                partyScreen.SetMessageText($"{selectedMember.MonBase.MonName} is not able to battle!");
+                return;
+            }
+            else if(selectedMember == this.playerSprite.Mon)
+            {
+                    partyScreen.SetMessageText($"{selectedMember.MonBase.MonName} is already out!");
+                return;
+            }
+            else
+            {
+                    partyScreen.gameObject.SetActive(false);
+                    currentAction = 0;
+                    dialogueBox.UpdateActionSelection(currentAction);
+                    currentPartyMember = 0;
+                    partyScreen.UpdateMonsterSelection(currentPartyMember);
+                    state = BattleState.Busy;
+                    StartCoroutine(SwitchMonster(selectedMember));
+            }
+        }
+        //if backspace pressed, return to Player Action screen
+        else if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            currentPartyMember = 0;
+            partyScreen.UpdateMonsterSelection(currentPartyMember);
+            partyScreen.gameObject.SetActive(false);
+            dialogueBox.EnableActionSelector(true);
+            dialogueBox.EnableDialogueText(true);
+            state = BattleState.ActionSelection;
+        }
+    }
+
+
+
+    IEnumerator SwitchMonster(Monster newMon)
+    {
+        bool swappingHealthy = this.playerSprite.Mon.Hp > 0;
+        //if the mons swapped out are both healthy, run this dialogue and animation
+        if (swappingHealthy)
+        {
+            yield return dialogueBox.TypeDialogue($"Come back, {this.playerSprite.Mon.MonBase.MonName}!");
+            this.playerSprite.FaintAnimation();
+            yield return new WaitForSeconds(2f);
+        }
+
+        //StartCoroutine(dialogueBox.TypeDialogue($"Come back, {playerSprite.Mon.MonBase.MonName}!"));
+        this.playerSprite.Setup(newMon);
+        playerHud.SetData(newMon);
+        dialogueBox.SetMoveNames(newMon.Moves);
+        StartCoroutine(dialogueBox.TypeDialogue($"Go, {newMon.MonBase.MonName}!"));
+        yield return new WaitForSeconds(1f);
+
+        //if the mons swapped out are both healthy, run Enemy Move
+        if (swappingHealthy)
+        {
+            StartCoroutine(EnemyMove());
+        }
+        else
+        {
+            PlayerAction();
         }
     }
 }

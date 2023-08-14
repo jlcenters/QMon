@@ -23,7 +23,13 @@ public class BattleSprite : MonoBehaviour
         originalColor = img.color;
     }
 
-
+    public bool IsPlayermon
+    {
+        get
+        {
+            return isPlayermon;
+        }
+    }
     public Monster Mon { get; set; }
 
     public void Setup(Monster mon)

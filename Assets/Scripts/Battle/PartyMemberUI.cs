@@ -11,6 +11,7 @@ public class PartyMemberUI : MonoBehaviour
     [SerializeField] HPBar hpBar;
 
     Monster monster;
+    [SerializeField] Color highlightedColor;
 
     public void SetData(Monster mon)
     {
@@ -22,5 +23,17 @@ public class PartyMemberUI : MonoBehaviour
         //TODO: decrement
         hpTxt.text = mon.Hp + "/" + mon.MaxHp;
         Debug.Log("lv " + mon.Level + " current HP: " + mon.Hp + "; normalized for HP bar: " + (float)mon.Hp / (float)mon.MaxHp);
+    }
+
+    public void SetSelected(bool selected)
+    {
+        if (selected)
+        {
+            nameTxt.color = highlightedColor;
+        }
+        else
+        {
+            nameTxt.color = Color.black;
+        }
     }
 }

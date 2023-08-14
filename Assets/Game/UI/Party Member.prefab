@@ -739,3 +739,4 @@ MonoBehaviour:
   lvTxt: {fileID: 6409577941969451322}
   hpTxt: {fileID: 1356136481114425661}
   hpBar: {fileID: 3860362465576148279}
+  highlightedColor: {r: 0.20440245, g: 0.45364562, b: 1, a: 1}

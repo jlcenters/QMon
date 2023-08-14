@@ -32,7 +32,6 @@ public class GameController : MonoBehaviour
         var playerParty = playerController.GetComponent<MonParty>();
         var wildMon = FindObjectOfType<MapArea>().GetComponent<MapArea>().GetRandomWildMon();
         battleSystem.StartBattle(playerParty, wildMon);
-        
     }
 
     void EndBattle(bool won)
