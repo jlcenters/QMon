@@ -18,7 +18,11 @@ public class MoveBase : ScriptableObject
     [SerializeField] int power;
     [SerializeField] int accuracy;
     [SerializeField] int pp;
+    [SerializeField] MoveEffects effects;
+    [SerializeField] MoveTarget target;
+    [SerializeField] MoveCategory category;
 
+    //Properties
     public int Power
     {
         get { return power; }
@@ -43,7 +47,7 @@ public class MoveBase : ScriptableObject
     {
         get { return type; }
     }
-    public bool IsSpecial
+    public bool IsElemental
     {
         get
         {
@@ -57,4 +61,58 @@ public class MoveBase : ScriptableObject
             }
         }
     }
+    public MoveEffects Effects
+    {
+        get { return effects; }
+    }
+    public MoveTarget Target
+    {
+        get { return target; }
+    }
+    public MoveCategory Category
+    {
+        get { return category; }
+    }
+}
+
+
+
+//Does the move damage or affect one's status?
+public enum MoveCategory
+{
+    Attack,
+    Status
+}
+
+
+//status conditions class
+[System.Serializable]
+public class MoveEffects
+{
+    [SerializeField] List<StatBoost> boosts;
+
+    public List<StatBoost> Boosts 
+    { 
+        get
+        {
+            return boosts;
+        } 
+    }
+}
+
+//Dictionaries are not able to be serializable, so this class is a workaround for that
+[System.Serializable]
+public class StatBoost
+{
+    public Stat stat;
+    public int boost;
+}
+
+
+
+//Who is receiving the stat boost?
+public enum MoveTarget
+{
+    Foe,
+    Self
 }

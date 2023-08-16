@@ -29,7 +29,6 @@ public class MonsterBase : ScriptableObject
 
     [SerializeField] int attack;
     [SerializeField] int block;
-    [SerializeField] int spBlock;
     [SerializeField] int element;
     [SerializeField] int speed;
 
@@ -37,6 +36,8 @@ public class MonsterBase : ScriptableObject
 
     //checks to see if mon is player's current active
     public bool isFirst;
+
+
 
     public string MonName
     {
@@ -70,10 +71,6 @@ public class MonsterBase : ScriptableObject
     {
         get { return block; }
     }
-    public int SpBlock
-    {
-        get { return spBlock; }
-    }
     public int Element
     {
         get { return element; }
@@ -88,6 +85,9 @@ public class MonsterBase : ScriptableObject
         get { return learnableMoves; }
     }
 }
+
+
+
 
 //will appear in Inspector
 [System.Serializable]
@@ -107,6 +107,9 @@ public class LearnableMove
     }
 }
 
+
+
+//determines typing of monster
 public enum MonType
 {
     None,
@@ -116,6 +119,17 @@ public enum MonType
     Normal,
     Ghost,
     Special
+}
+
+
+
+//list of monster stats
+public enum Stat
+{
+    Attack,
+    Block,
+    Element,
+    Speed
 }
 
 
@@ -134,6 +148,7 @@ public class TypeChart
 
         //KEY: 1- normal effectiveness, .5- not very effective, 2- super effective, 0- no effect
     };
+
 
 
     public static float GetEffectiveness(MonType attacker, MonType defender)

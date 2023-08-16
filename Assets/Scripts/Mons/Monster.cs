@@ -8,6 +8,8 @@ public class Monster
     //list references
     [SerializeField] MonsterBase monBase;
     [SerializeField] int level;
+
+
     //reference to base stats
     public MonsterBase MonBase { 
         get {
@@ -15,7 +17,7 @@ public class Monster
         } 
     }
 
-    //current stats compared to base
+    //current stats which reference the base
     public int Level {
         get {
             return level;
@@ -23,11 +25,36 @@ public class Monster
     }
     public int Hp { get; set; }
     public int Xp { get; set; }
-
-    //list of usable moves
     public List<Move> Moves { get; set; }
+    public Dictionary<Stat, int> Stats { get; private set; }
+    public Dictionary<Stat, int> StatBoost { get; private set; }
+    public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
 
-    
+
+
+    //Stats Properties and Methods
+    public int Attack
+    {
+        get { return GetStat(Stat.Attack); }
+    }
+    public int Block
+    {
+        get { return GetStat(Stat.Block); }
+    }
+    public int Element
+    {
+        get { return GetStat(Stat.Element); }
+    }
+    public int Speed
+    {
+        get { return GetStat(Stat.Speed); }
+    }
+    public int MaxHp { get; private set; }
+    //TODO: new formulas or new base stats; current stats do not match with formulas
+    //TODO: on level up; check monster for special bonuses to stats
+    //TODO - STRETCH: after lv 10,15,20, give a one-time bonus to stats
+
+    //Initializes all public stats
     public void Init()
     {
         //grabs references to base and stats
@@ -38,51 +65,104 @@ public class Monster
         foreach (var move in MonBase.LearnableMoves)
         {
             //if current is the minimum level required to learn the move, store in list
-            if(move.Level <= Level)
+            if (move.Level <= Level)
             {
                 Moves.Add(new Move(move.Base));
             }
 
             //if list contains 4 or more moves, break loop
-            if(Moves.Count >= 4)
+            if (Moves.Count >= 4)
             {
                 break;
+            }
+        }
+
+        CalculateStats();
+
+        Hp = MaxHp;
+
+        ResetStatBoost();
+    }
+
+    //Initializing stats referencing the base
+    void CalculateStats()
+    {
+        Stats = new Dictionary<Stat, int>();
+        Stats.Add(Stat.Attack, MonBase.Attack + (1 * Level));
+        Stats.Add(Stat.Block, MonBase.Block + (1 * Level));
+        Stats.Add(Stat.Element, MonBase.Element + (1 * Level));
+        Stats.Add(Stat.Speed, MonBase.Speed + (1 * Level));
+
+        MaxHp = MonBase.MaxHp + (2 * Level);
+    }
+
+    //encapsulating the getter for all stats, so that it's more efficient to apply stat changes in the future
+    int GetStat(Stat stat)
+    {
+        int statVal = Stats[stat];
+
+        //stat boosts
+        int boost = StatBoost[stat];
+        var boostValues = new float[] { 1f, 1.5f, 2f, 2.5f, 3f, 3.5f, 4f };
+
+        //if boost lvl is positive, stat is boosted; else, stat is decreased
+        if (boost >= 0)
+        {
+            statVal = Mathf.FloorToInt(statVal * boostValues[boost]);
+            Debug.Log($"boosted stat value: {statVal}");
+        }
+        else
+        {
+            statVal = Mathf.FloorToInt(statVal / boostValues[-boost]);
+            Debug.Log($"decreased stat value: {statVal}");
+        }
+
+        return statVal;
+    }
+
+    //during status effect move, apply boosts to separate object which will be referenced to when grabbing the Get Stat method each turn
+    
+    public void ApplyBoosts(List<StatBoost> statBoosts)
+    {
+        foreach(var statBoost in statBoosts)
+        {
+            var stat = statBoost.stat;
+            var boost = statBoost.boost;
+
+            //add boost value to dictionary
+            StatBoost[stat] = Mathf.Clamp(StatBoost[stat] + boost, -6, 6);
+            Debug.Log($"{stat} has been boosted to {StatBoost[stat]}");
+
+            //add to queue each status change to be displayed in UI
+            if(boost > 0)
+            {
+                StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} rose!");
+            }
+            else
+            {
+                StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} fell!");
+
             }
         }
     }
 
 
-    //TODO: new formulas or new base stats; current stats do not match with formulas
-    //TODO: on level up; check monster for special bonuses to stats
-    //TODO - STRETCH: after lv 10,15,20, give a one-time bonus to stats
-    //stats differ by level
-    public int Attack
+
+    //resets Stat Boost dictionary for starting and ending battles
+    void ResetStatBoost()
     {
-        get { return MonBase.Attack + (1 * Level); }
-    }
-    public int Block
-    {
-        get { return MonBase.Block + (1 * Level); }
-    }
-    public int SpBlock
-    {
-        get { return MonBase.SpBlock + (1 * Level); }
-    }
-    public int Element
-    {
-        get { return MonBase.Element + (1 * Level); }
-    }
-    public int Speed
-    {
-        get { return MonBase.Speed + (1 * Level); }
-    }
-    public int MaxHp
-    {
-        get { return MonBase.MaxHp + (5 * Level); }
+        StatBoost = new Dictionary<Stat, int>()
+        {
+            {Stat.Attack, 0 },
+            {Stat.Block, 0 },
+            {Stat.Element, 0 },
+            {Stat.Speed, 0 }
+        };
     }
 
 
 
+    //attack/defense logic; returns data from move for UI
     public DamageDetails TakeDamage(Move move, Monster attacker)
     {
         //62.5% chance of landing critical
@@ -92,25 +172,20 @@ public class Monster
             critical = 2f;
         }
 
-        //multiply type effectiveness to modifiers
-        float type = TypeChart.GetEffectiveness(move.Base.Type, this.MonBase.Type);
-
         //store info in Damage Details object to reference in Battle System
         var details = new DamageDetails()
         {
-            TypeEffectiveness = type,
+            TypeEffectiveness = TypeChart.GetEffectiveness(move.Base.Type, this.MonBase.Type),
             Critical = critical,
             Fainted = false
         };
 
+        //if move is special, use elemental dmg and check type effectiveness
+        float attackType = (move.Base.IsElemental) ? attacker.Element * TypeChart.GetEffectiveness(move.Base.Type, this.MonBase.Type) : attacker.Attack;
+        float defenseType = (move.Base.IsElemental) ? Block : Block;
 
-        //if move is special, use elemental dmg and special block
-        float attackType = (move.Base.IsSpecial) ? attacker.Element : attacker.Attack;
-        float defenseType = (move.Base.IsSpecial) ? SpBlock : Block;
-
-
-        //checks dmg stats and level, multiplies by type effectiveness and if critical
-        float damage = ((attackType + move.Base.Power) * attacker.Level) * type * critical / defenseType;
+        //adds attack to move's base damage, using level and crit success as multipliers, divide damage by defense
+        float damage = (attackType + move.Base.Power) * attacker.Level * critical / defenseType;
         Hp -= (int)damage;
         if(Hp <= 0)
         {
@@ -121,6 +196,8 @@ public class Monster
         return details;
     }
 
+
+
     //TODO: depending on ailments and hp, prepare different moves or different items
     //Grabs random number between 1 and the size of the monster's move list
     public Move GetRandomMove()
@@ -129,6 +206,18 @@ public class Monster
 
         return Moves[r];
     }
+
+
+
+
+    public void OnBattleOver()
+    {
+        ResetStatBoost();
+    }
+
+
+
+
 
 
 

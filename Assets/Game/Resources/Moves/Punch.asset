@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Punch
   m_EditorClassIdentifier: 
   moveName: Punch
-  description: Frootfol
+  description: Frootford
   type: 4
   power: 4
   accuracy: 95
   pp: 15
+  effect:
+    boosts: []
+  target: 0

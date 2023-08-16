@@ -22,7 +22,6 @@ public class BattleHud : MonoBehaviour
         hpBar.SetHP((float)mon.Hp / (float)mon.MaxHp);
         //TODO: decrement
         hpTxt.text = mon.Hp + "/" + mon.MaxHp;
-        Debug.Log("lv " + mon.Level + " current HP: " + mon.Hp + "; normalized for HP bar: " + (float)mon.Hp / (float)mon.MaxHp);
     }
 
     public IEnumerator UpdateHP()

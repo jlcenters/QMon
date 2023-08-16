@@ -6,22 +6,17 @@ using DG.Tweening;
 
 public class BattleSprite : MonoBehaviour
 {
-    /*[SerializeField] MonsterBase monBase;
-    [SerializeField] int level;*/
     [SerializeField] bool isPlayermon;
-    public float animDuration;
+    [SerializeField] BattleHud hud;
+
+    //public float animDuration;
 
     //Animation References
     Image img;
     Vector3 originalPos;
     Color originalColor;
 
-    private void Awake()
-    {
-        img = GetComponent<Image>();
-        originalPos = img.transform.localPosition;
-        originalColor = img.color;
-    }
+
 
     public bool IsPlayermon
     {
@@ -30,7 +25,25 @@ public class BattleSprite : MonoBehaviour
             return isPlayermon;
         }
     }
+
+    public BattleHud Hud
+    { 
+        get
+        {
+            return hud;
+        }
+    }
+
     public Monster Mon { get; set; }
+
+
+
+    private void Awake()
+    {
+        img = GetComponent<Image>();
+        originalPos = img.transform.localPosition;
+        originalColor = img.color;
+    }
 
     public void Setup(Monster mon)
     {
@@ -44,6 +57,9 @@ public class BattleSprite : MonoBehaviour
         {
             img.sprite = Mon.MonBase.FrontSprite;
         }
+
+        hud.SetData(mon);
+
         img.color = originalColor;
         EnterAnimation();
 

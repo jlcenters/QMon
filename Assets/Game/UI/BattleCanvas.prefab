@@ -1138,7 +1138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayermon: 0
-  animDuration: 0.5
+  hud: {fileID: 6865707144479401698}
 --- !u!1 &2490733365862800883
 GameObject:
   m_ObjectHideFlags: 0
@@ -2213,7 +2213,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPlayermon: 1
-  animDuration: 0.5
+  hud: {fileID: 4016223558699349001}
 --- !u!1 &5617197923924529946
 GameObject:
   m_ObjectHideFlags: 0

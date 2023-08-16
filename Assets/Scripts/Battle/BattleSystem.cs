@@ -22,13 +22,12 @@ public enum BattleState
 //Class
 public class BattleSystem : MonoBehaviour
 {
-    //player details
+    //sprite details
     [SerializeField] BattleSprite playerSprite;
-    [SerializeField] BattleHud playerHud;
+    //[SerializeField] BattleHud playerHud;
 
-    //enemy details
     [SerializeField] BattleSprite enemySprite;
-    [SerializeField] BattleHud enemyHud;
+    //[SerializeField] BattleHud enemyHud;
 
     //UI details
     [SerializeField] BattleDialogueBox dialogueBox;
@@ -44,7 +43,7 @@ public class BattleSystem : MonoBehaviour
     //monster select reference
     [SerializeField] PartyScreen partyScreen;
 
-    //bool to determine whether or not player won battle
+    //event to determine whether or not player won battle
     public event Action<bool> OnBattleOver;
 
     MonParty playerParty;
@@ -64,9 +63,7 @@ public class BattleSystem : MonoBehaviour
     {
         //display sprites and status HUDs
         playerSprite.Setup(playerParty.GetHealthyMon());
-        playerHud.SetData(playerSprite.Mon);
         enemySprite.Setup(wildMon);
-        enemyHud.SetData(enemySprite.Mon);
 
         //set up party screen for if player wants to swap out their mons
         partyScreen.Init();
@@ -80,24 +77,18 @@ public class BattleSystem : MonoBehaviour
         //wait 1 second before changing to Player Action state
         yield return new WaitForSeconds(1f);
 
-        PlayerAction();
+        ActionSelection();
     }
 
 
 
     //State Methods
-    void PlayerAction()
+    void ActionSelection()
     {
         state = BattleState.ActionSelection;
 
         dialogueBox.SetDialogue("What will you do?");
         dialogueBox.EnableActionSelector(true);
-    }
-
-    void BattleOver(bool isWin)
-    {
-        state = BattleState.BattleOver;
-        OnBattleOver(isWin);
     }
 
     void OpenPartyScreen()
@@ -115,7 +106,6 @@ public class BattleSystem : MonoBehaviour
         dialogueBox.EnableMoveSelector(true);
 
         state = BattleState.MoveSelection;
-        Debug.Log("set move stuffs view");
     }
 
     IEnumerator PlayerMove()
@@ -126,7 +116,11 @@ public class BattleSystem : MonoBehaviour
         var move = playerSprite.Mon.Moves[currentMove];
         yield return RunMove(playerSprite, enemySprite, move);
 
-        StartCoroutine(EnemyMove());
+        //will only start the next state if the battle mantained its Preform Move state (did not become Battle Over)
+        if(state == BattleState.PreformMove)
+        {
+            StartCoroutine(EnemyMove());
+        }
     }
 
     IEnumerator EnemyMove()
@@ -136,8 +130,21 @@ public class BattleSystem : MonoBehaviour
         //get move and preform Run Move method
         var move = enemySprite.Mon.GetRandomMove();
         yield return RunMove(enemySprite, playerSprite, move);
-            
-        PlayerAction();
+
+        //will only start the next state if the battle mantained its Preform Move state (did not become Battle Over)
+        if (state == BattleState.PreformMove)
+        {
+            ActionSelection();
+        }
+    }
+
+    void BattleOver(bool isWin)
+    {
+        state = BattleState.BattleOver;
+
+        //resets stat boosts of all mons in player party
+        playerParty.Monsters.ForEach(m => m.OnBattleOver());
+        OnBattleOver(isWin);
     }
 
 
@@ -152,14 +159,39 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         targetSprite.DamageAnimation();
 
+        //if move is a status effect, boost stats; else, attack
+        if(move.Base.Category == MoveCategory.Status)
+        {
+            var effects = move.Base.Effects;
+            //make sure boost is not null to prevent error
+            if(effects.Boosts != null)
+            {
+                //if status move target is the enemy, direct towards enemy sprite; else, direct towards source sprite
+                if (move.Base.Target == MoveTarget.Foe)
+                {
+                    targetSprite.Mon.ApplyBoosts(effects.Boosts);
+                }
+                else
+                {
+                    srcSprite.Mon.ApplyBoosts(effects.Boosts);
+                }
 
-        var targetDamage = targetSprite.Mon.TakeDamage(move, srcSprite.Mon);
+                //Show status changes for source and target, if any
+                yield return ShowStatusChanges(srcSprite.Mon);
+                yield return ShowStatusChanges(targetSprite.Mon);
+            }
+        }
+        else
+        {
+            var targetDamage = targetSprite.Mon.TakeDamage(move, srcSprite.Mon);
 
-        yield return playerHud.UpdateHP();
-        yield return ShowDamageDetails(targetDamage);
+            yield return targetSprite.Hud.UpdateHP();
+            yield return ShowDamageDetails(targetDamage);
+        }
 
-        //if Target Sprite fainted from the attack, display faint sequence
-        if (targetDamage.Fainted)
+
+        //if hp reaches 0, begin faint sequence
+        if (targetSprite.Mon.Hp <= 0)
         {
             targetSprite.FaintAnimation();
             yield return dialogueBox.TypeDialogue($"{targetSprite.Mon.MonBase.MonName} fainted!");
@@ -177,7 +209,7 @@ public class BattleSystem : MonoBehaviour
             //if there is no healthy mon, end battle and Player loses; else, select next mon to send out
             if (nextMon == null)
             {
-                OnBattleOver(false);
+                BattleOver(false);
             }
             else
             {
@@ -187,7 +219,17 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            OnBattleOver(true);
+            BattleOver(true);
+        }
+    }
+
+    IEnumerator ShowStatusChanges(Monster mon)
+    {
+        while(mon.StatusChanges.Count > 0)
+        {
+            var message = mon.StatusChanges.Dequeue();
+            yield return dialogueBox.TypeDialogue(message);
+            yield return new WaitForSeconds(1f);
         }
     }
 
@@ -430,7 +472,7 @@ public class BattleSystem : MonoBehaviour
 
         //StartCoroutine(dialogueBox.TypeDialogue($"Come back, {playerSprite.Mon.MonBase.MonName}!"));
         this.playerSprite.Setup(newMon);
-        playerHud.SetData(newMon);
+        playerSprite.Hud.SetData(newMon);
         dialogueBox.SetMoveNames(newMon.Moves);
         StartCoroutine(dialogueBox.TypeDialogue($"Go, {newMon.MonBase.MonName}!"));
         yield return new WaitForSeconds(1f);
@@ -442,7 +484,7 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            PlayerAction();
+            ActionSelection();
         }
     }
 }
