@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -26,6 +27,7 @@ public class Monster
     public int Hp { get; set; }
     public int Xp { get; set; }
     public List<Move> Moves { get; set; }
+    public Move CurrentMove { get; set; }
     public Dictionary<Stat, int> Stats { get; private set; }
     public Dictionary<Stat, int> StatBoost { get; private set; }
     public Queue<string> StatusChanges { get; private set; } = new Queue<string>();
@@ -53,6 +55,7 @@ public class Monster
     //TODO: new formulas or new base stats; current stats do not match with formulas
     //TODO: on level up; check monster for special bonuses to stats
     //TODO - STRETCH: after lv 10,15,20, give a one-time bonus to stats
+
 
     //Initializes all public stats
     public void Init()
@@ -109,12 +112,10 @@ public class Monster
         if (boost >= 0)
         {
             statVal = Mathf.FloorToInt(statVal * boostValues[boost]);
-            Debug.Log($"boosted stat value: {statVal}");
         }
         else
         {
             statVal = Mathf.FloorToInt(statVal / boostValues[-boost]);
-            Debug.Log($"decreased stat value: {statVal}");
         }
 
         return statVal;
@@ -131,7 +132,6 @@ public class Monster
 
             //add boost value to dictionary
             StatBoost[stat] = Mathf.Clamp(StatBoost[stat] + boost, -6, 6);
-            Debug.Log($"{stat} has been boosted to {StatBoost[stat]}");
 
             //add to queue each status change to be displayed in UI
             if(boost > 0)
@@ -141,7 +141,6 @@ public class Monster
             else
             {
                 StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} fell!");
-
             }
         }
     }
@@ -202,9 +201,12 @@ public class Monster
     //Grabs random number between 1 and the size of the monster's move list
     public Move GetRandomMove()
     {
-        int r = Random.Range(0, Moves.Count);
+        //Usable Moves will store all moves which have not been exhausted yet
+        var usableMoves = Moves.Where(x => x.PP > 0).ToList();
 
-        return Moves[r];
+        int r = Random.Range(0, usableMoves.Count);
+
+        return usableMoves[r];
     }
 
 
@@ -221,8 +223,7 @@ public class Monster
 
 
 
-    /*
-     * POKEMON BULBAPEDIA FORMULAS: 
+    /* POKEMON BULBAPEDIA FORMULAS: 
      * 
      * STATS: Mathf.FloorToInt((MonBase.Attack * Level) / 100f) + 5;   //MonBase.MaxHP & + 10 for hp
      * 

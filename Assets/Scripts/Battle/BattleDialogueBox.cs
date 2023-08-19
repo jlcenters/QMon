@@ -96,6 +96,16 @@ public class BattleDialogueBox : MonoBehaviour
         //update PP and Element GameObjects
         ppText.text = $"PP {move.PP} / {move.Base.PP}";
         elementText.text = move.Base.Type.ToString();
+        //if pp is at zero, display will be red; else, pp display will be black
+        if (move.PP == 0)
+        {
+            ppText.color = Color.red;
+        }
+        else
+        {
+            ppText.color = Color.black;
+        }
+
     }
 
     public void SetMoveNames(List<Move> moves)

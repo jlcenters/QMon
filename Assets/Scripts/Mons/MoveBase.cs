@@ -21,6 +21,7 @@ public class MoveBase : ScriptableObject
     [SerializeField] MoveEffects effects;
     [SerializeField] MoveTarget target;
     [SerializeField] MoveCategory category;
+    [SerializeField] int priority;
 
     //Properties
     public int Power
@@ -72,6 +73,10 @@ public class MoveBase : ScriptableObject
     public MoveCategory Category
     {
         get { return category; }
+    }
+    public int Priority
+    {
+        get { return priority; }
     }
 }
 

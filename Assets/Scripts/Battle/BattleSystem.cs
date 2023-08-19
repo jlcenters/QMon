@@ -12,9 +12,18 @@ public enum BattleState
     ActionSelection,
     PartyScreen,
     MoveSelection,
-    PreformMove,
+    RunningTurn,
     Busy,
     BattleOver
+}
+
+//Checking which Action you have selected in the Action Menu
+public enum BattleAction
+{
+    Move,
+    SwitchPokemon,
+    UseItem,
+    Run
 }
 
 
@@ -24,16 +33,15 @@ public class BattleSystem : MonoBehaviour
 {
     //sprite details
     [SerializeField] BattleSprite playerSprite;
-    //[SerializeField] BattleHud playerHud;
 
     [SerializeField] BattleSprite enemySprite;
-    //[SerializeField] BattleHud enemyHud;
 
     //UI details
     [SerializeField] BattleDialogueBox dialogueBox;
 
-    //state reference
+    //state references (Previous State is nullable)
     BattleState state;
+    BattleState? previousState;
 
     //view references
     int currentAction;
@@ -76,7 +84,6 @@ public class BattleSystem : MonoBehaviour
 
         //wait 1 second before changing to Player Action state
         yield return new WaitForSeconds(1f);
-
         ActionSelection();
     }
 
@@ -93,6 +100,7 @@ public class BattleSystem : MonoBehaviour
 
     void OpenPartyScreen()
     {
+/**/        Debug.Log("opening party screen");
         state = BattleState.PartyScreen;
 
         partyScreen.SetPartyData(playerParty.Monsters);
@@ -108,36 +116,6 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.MoveSelection;
     }
 
-    IEnumerator PlayerMove()
-    {
-        state = BattleState.PreformMove;
-
-        //get move and preform Run Move method
-        var move = playerSprite.Mon.Moves[currentMove];
-        yield return RunMove(playerSprite, enemySprite, move);
-
-        //will only start the next state if the battle mantained its Preform Move state (did not become Battle Over)
-        if(state == BattleState.PreformMove)
-        {
-            StartCoroutine(EnemyMove());
-        }
-    }
-
-    IEnumerator EnemyMove()
-    {
-        state = BattleState.PreformMove;
-
-        //get move and preform Run Move method
-        var move = enemySprite.Mon.GetRandomMove();
-        yield return RunMove(enemySprite, playerSprite, move);
-
-        //will only start the next state if the battle mantained its Preform Move state (did not become Battle Over)
-        if (state == BattleState.PreformMove)
-        {
-            ActionSelection();
-        }
-    }
-
     void BattleOver(bool isWin)
     {
         state = BattleState.BattleOver;
@@ -145,6 +123,115 @@ public class BattleSystem : MonoBehaviour
         //resets stat boosts of all mons in player party
         playerParty.Monsters.ForEach(m => m.OnBattleOver());
         OnBattleOver(isWin);
+    }
+
+
+
+    //Action State Methods
+    IEnumerator RunTurns(BattleAction action)
+    {
+        state = BattleState.RunningTurn;
+
+        //if player chooses to attack, preform moves in order of speed; else, player preforms action first always
+        if (action == BattleAction.Move)
+        {
+            //grab player and enemy choices
+            playerSprite.Mon.CurrentMove = playerSprite.Mon.Moves[currentMove];
+            GetEnemyAction();
+
+            //check priority of moves
+            int playerPriority = playerSprite.Mon.CurrentMove.Base.Priority;
+            int enemyPriority = playerSprite.Mon.CurrentMove.Base.Priority;
+            bool playerFirst = true;
+
+            //if enemy move has a higher priority (lower number), enemy goes first; else, if their moves share the same priority, highest speed goes first
+            //PRIORITY KEY: 0-flee, 1-switch, 2-items, 3-attack
+            if(enemyPriority < playerPriority)
+            {
+                playerFirst = false;
+            }
+            else if(enemyPriority == playerPriority)
+            {
+                playerFirst = playerSprite.Mon.MonBase.Speed >= enemySprite.Mon.MonBase.Speed;
+            }
+
+            //if the playermon's speed is greater than or equal to the enemy's, player moves first; else, enemy does
+            var firstSprite = (playerFirst) ? playerSprite : enemySprite;
+            var secondSprite = (playerFirst) ? enemySprite : playerSprite;
+
+            //if secondSprite faints, use this as a reference
+            var secondMon = secondSprite.Mon;
+
+            //preform first move; if target party faints, end battle
+            yield return RunMove(firstSprite, secondSprite, firstSprite.Mon.CurrentMove);
+            yield return RunAfterTurn();
+
+            if (secondMon.Hp > 0)
+            {
+                //preform second move; if target party faints, end turn
+                yield return RunMove(secondSprite, firstSprite, secondSprite.Mon.CurrentMove);
+                yield return RunAfterTurn();
+            }
+
+        }
+        else
+        {
+            //if action chosen is to switch current mon out, do so
+            if(action == BattleAction.SwitchPokemon)
+            {
+                var selectedMon = playerParty.Monsters[currentPartyMember];
+                state = BattleState.Busy;
+                yield return SwitchMonster(selectedMon);
+            }
+
+            //enemy's turn
+            GetEnemyAction();
+            yield return RunMove(enemySprite, playerSprite, enemySprite.Mon.CurrentMove);
+            if (state == BattleState.BattleOver)
+            {
+                yield break;
+            }
+        }
+        
+        //if battle is not over, begin new turn
+        if(state != BattleState.BattleOver)
+        {
+            ActionSelection();
+        }
+    }
+
+    void GetEnemyAction()
+    {
+        enemySprite.Mon.CurrentMove = enemySprite.Mon.GetRandomMove();
+    }
+
+    IEnumerator SwitchMonster(Monster newMon)
+    {
+        bool didPlayerFaint = playerSprite.Mon.Hp <= 0;
+        //if the mons swapped out are both healthy, run this dialogue and animation
+        if (!didPlayerFaint)
+        {
+            yield return dialogueBox.TypeDialogue($"Come back, {playerSprite.Mon.MonBase.MonName}!");
+            playerSprite.FaintAnimation();
+            yield return new WaitForSeconds(2f);
+        }
+
+        playerSprite.Setup(newMon);
+        playerSprite.Hud.SetData(newMon);
+        dialogueBox.SetMoveNames(newMon.Moves);
+        StartCoroutine(dialogueBox.TypeDialogue($"Go, {newMon.MonBase.MonName}!"));
+        yield return new WaitForSeconds(1f);
+
+        //if the mon was swapped because of a fainting, check who attacks first; else, enemy attacks next
+        yield return null;
+        if (didPlayerFaint)
+        {
+            state = BattleState.RunningTurn;
+        }
+        else
+        {
+            yield return null;
+        }
     }
 
 
@@ -159,27 +246,10 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         targetSprite.DamageAnimation();
 
-        //if move is a status effect, boost stats; else, attack
+        //if move is a status effect, run effects ienumerator; else, attack
         if(move.Base.Category == MoveCategory.Status)
         {
-            var effects = move.Base.Effects;
-            //make sure boost is not null to prevent error
-            if(effects.Boosts != null)
-            {
-                //if status move target is the enemy, direct towards enemy sprite; else, direct towards source sprite
-                if (move.Base.Target == MoveTarget.Foe)
-                {
-                    targetSprite.Mon.ApplyBoosts(effects.Boosts);
-                }
-                else
-                {
-                    srcSprite.Mon.ApplyBoosts(effects.Boosts);
-                }
-
-                //Show status changes for source and target, if any
-                yield return ShowStatusChanges(srcSprite.Mon);
-                yield return ShowStatusChanges(targetSprite.Mon);
-            }
+            yield return RunMoveEffects(move, srcSprite.Mon, targetSprite.Mon);
         }
         else
         {
@@ -200,6 +270,28 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
+    IEnumerator RunMoveEffects(Move move, Monster source, Monster target)
+    {
+        var effects = move.Base.Effects;
+        //make sure boost is not null to prevent error
+        if (effects.Boosts != null)
+        {
+            //if status move target is the enemy, direct towards enemy sprite; else, direct towards source sprite
+            if (move.Base.Target == MoveTarget.Foe)
+            {
+                target.ApplyBoosts(effects.Boosts);
+            }
+            else
+            {
+                source.ApplyBoosts(effects.Boosts);
+            }
+
+            //Show status changes for source and target, if any
+            yield return ShowStatusChanges(source);
+            yield return ShowStatusChanges(target);
+        }
+    }
+
     void CheckForBattleOver(BattleSprite faintedUnit)
     {
         //if Player Sprite, check party; else, end battle and Player wins
@@ -214,7 +306,6 @@ public class BattleSystem : MonoBehaviour
             else
             {
                 OpenPartyScreen();
-                Debug.Log("current state: " + state.ToString());
             }
         }
         else
@@ -251,6 +342,16 @@ public class BattleSystem : MonoBehaviour
         yield return new WaitForSeconds(1f);
     }
 
+    IEnumerator RunAfterTurn()
+    {
+        if (state == BattleState.BattleOver)
+        {
+            yield break;
+        }
+        //waits until state is back to Running Turn before executing
+        yield return new WaitUntil(() => state == BattleState.RunningTurn);
+    }
+
 
 
     //Update
@@ -272,7 +373,7 @@ public class BattleSystem : MonoBehaviour
 
 
 
-    //Handle Selection Boxes
+    //Handle Selection Methods
     void HandleActionSelection()
     {
         //determine which action the player is about to select
@@ -321,6 +422,7 @@ public class BattleSystem : MonoBehaviour
                 else
                 {
                     //monsters
+                    previousState = BattleState.ActionSelection;
                     OpenPartyScreen();
                 }
             }
@@ -348,7 +450,7 @@ public class BattleSystem : MonoBehaviour
         //determine which move the player is about to select
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            if (currentMove < this.playerSprite.Mon.Moves.Count - 1)
+            if (currentMove < playerSprite.Mon.Moves.Count - 1)
             {
                     currentMove++;
             }
@@ -362,7 +464,7 @@ public class BattleSystem : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            if (currentMove < this.playerSprite.Mon.Moves.Count - 2)
+            if (currentMove < playerSprite.Mon.Moves.Count - 2)
             {
                     currentMove += 2;
             }
@@ -375,15 +477,23 @@ public class BattleSystem : MonoBehaviour
             }
         }
 
-            //highlight selection
-            dialogueBox.UpdateMoveSelection(currentMove, this.playerSprite.Mon.Moves[currentMove]);
+        //highlight selection
+        dialogueBox.UpdateMoveSelection(currentMove, playerSprite.Mon.Moves[currentMove]);
 
-        //if spacebar pressed, preform player move; else, if backspace pressed, go back to action selection
+        //if spacebar pressed, begin Run Turns coroutine; else, if backspace pressed, go back to action selection
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            //if the move's PP is at 0, do not execute
+            var move = playerSprite.Mon.Moves[currentMove];
+            if(move.PP == 0)
+            {
+                return;
+            }
+
             dialogueBox.EnableMoveSelector(false);
             dialogueBox.EnableDialogueText(true);
-            StartCoroutine(PlayerMove());
+            previousState = BattleState.RunningTurn;
+            StartCoroutine(RunTurns(BattleAction.Move));
         }
         else if (Input.GetKeyDown(KeyCode.Backspace))
         {
@@ -420,7 +530,7 @@ public class BattleSystem : MonoBehaviour
         partyScreen.UpdateMonsterSelection(currentPartyMember);
 
         //if selected hp is empty or the selected mon is the same as the one currently out, do not switch and send message
-        //otherwise, swap out current mon for new mon and begin Enemy Move
+        //else, swap out current mon for new mon and begin Enemy Move
         if (Input.GetKeyDown(KeyCode.Space))
         {
             var selectedMember = playerParty.Monsters[currentPartyMember];
@@ -429,24 +539,34 @@ public class BattleSystem : MonoBehaviour
                 partyScreen.SetMessageText($"{selectedMember.MonBase.MonName} is not able to battle!");
                 return;
             }
-            else if(selectedMember == this.playerSprite.Mon)
+            else if(selectedMember == playerSprite.Mon)
             {
                     partyScreen.SetMessageText($"{selectedMember.MonBase.MonName} is already out!");
                 return;
             }
             else
             {
+                    //resetting highlighted selections
                     partyScreen.gameObject.SetActive(false);
-                    currentAction = 0;
-                    dialogueBox.UpdateActionSelection(currentAction);
-                    currentPartyMember = 0;
-                    partyScreen.UpdateMonsterSelection(currentPartyMember);
-                    state = BattleState.Busy;
+
+                //if the player's mon had fainted, allow player to choose new mon before starting a new turn; else, run turns as usual
+                if(previousState == BattleState.RunningTurn)
+                {
+/**/                    Debug.Log("previous mon had fainted, resetting previousState and starting the SwitchMonster coroutine");
+                    previousState = null;
                     StartCoroutine(SwitchMonster(selectedMember));
+                }
+                else
+                {
+/**/                    Debug.Log("previous mon did not faint, continue to enemy turn");
+                    state = BattleState.Busy;
+                    previousState = null;
+                    StartCoroutine(RunTurns(BattleAction.SwitchPokemon));
+                }
             }
         }
-        //if backspace pressed, return to Player Action screen
-        else if (Input.GetKeyDown(KeyCode.Backspace))
+        //if backspace pressed and previous mon did not faint, return to Player Action screen
+        else if (Input.GetKeyDown(KeyCode.Backspace) && previousState != BattleState.RunningTurn)
         {
             currentPartyMember = 0;
             partyScreen.UpdateMonsterSelection(currentPartyMember);
@@ -459,32 +579,4 @@ public class BattleSystem : MonoBehaviour
 
 
 
-    IEnumerator SwitchMonster(Monster newMon)
-    {
-        bool swappingHealthy = this.playerSprite.Mon.Hp > 0;
-        //if the mons swapped out are both healthy, run this dialogue and animation
-        if (swappingHealthy)
-        {
-            yield return dialogueBox.TypeDialogue($"Come back, {this.playerSprite.Mon.MonBase.MonName}!");
-            this.playerSprite.FaintAnimation();
-            yield return new WaitForSeconds(2f);
-        }
-
-        //StartCoroutine(dialogueBox.TypeDialogue($"Come back, {playerSprite.Mon.MonBase.MonName}!"));
-        this.playerSprite.Setup(newMon);
-        playerSprite.Hud.SetData(newMon);
-        dialogueBox.SetMoveNames(newMon.Moves);
-        StartCoroutine(dialogueBox.TypeDialogue($"Go, {newMon.MonBase.MonName}!"));
-        yield return new WaitForSeconds(1f);
-
-        //if the mons swapped out are both healthy, run Enemy Move
-        if (swappingHealthy)
-        {
-            StartCoroutine(EnemyMove());
-        }
-        else
-        {
-            ActionSelection();
-        }
-    }
 }

@@ -5,27 +5,27 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public float overlapCircle;
     public float speed;
     public CharacterStatus storedData;
     bool isMoving;
 
-
     public LayerMask solidObjectLayer;
     public LayerMask longGrassLayer;
+    public LayerMask interactablesLayer;
 
     Vector2 userInput; 
     Animator ani;
 
-
     public event Action OnEncounter;
 
-    //TODO: potentially add instance of current active mon
 
 
     private void Awake()
     {
         ani = GetComponent<Animator>();
     }
+
     public void HandleUpdate()
     {
         if (!isMoving)
@@ -60,23 +60,27 @@ public class PlayerController : MonoBehaviour
 
         ani.SetBool("isMoving", isMoving);
 
+        //if spacebar is pressed, check for interaction
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Interact();
+        }
+
     }
-
-
-
 
 
 
     bool IsWalkable(Vector3 target)
     {
-        //is not walkable if overlaps with a 
-        if (Physics2D.OverlapCircle(target, 0.2f, solidObjectLayer) != null)
+        //if overlapping with a solid object or interactable, is not walkable
+        if (Physics2D.OverlapCircle(target, overlapCircle, solidObjectLayer | interactablesLayer) != null)
         {
             return false;
         }
 
         return true;
     }
+
     IEnumerator Move(Vector3 target)
     {
         isMoving = true;
@@ -89,6 +93,25 @@ public class PlayerController : MonoBehaviour
         }
         transform.position = target;
         isMoving = false;
+    }
+
+    void Interact()
+    {
+        //check direction which player is facing
+        var playerFace = new Vector3(ani.GetFloat("moveX"), ani.GetFloat("moveY"));
+
+        //find line which player can interact
+        var interactableFace = transform.position + playerFace;
+
+/**/        Debug.DrawLine(transform.position, interactableFace, Color.red, .5f);
+
+        //if there is an interactable object in the interactable range, initiate Interact method
+        var collider = Physics2D.OverlapCircle(interactableFace, overlapCircle, interactablesLayer);
+        if(collider != null)
+        {
+            collider.GetComponent<Interactable>()?.Interact();
+        }
+
     }
 
     void CheckForEncounters()

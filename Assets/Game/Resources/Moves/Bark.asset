@@ -24,3 +24,4 @@ MonoBehaviour:
       boost: -2
   target: 0
   category: 1
+  priority: 3
