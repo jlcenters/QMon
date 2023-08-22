@@ -32,13 +32,16 @@ public class MonsterBase : ScriptableObject
     [SerializeField] int element;
     [SerializeField] int speed;
 
+    //between 0 and 255; lower the catch rate harder it is to catch
+    [SerializeField] int catchRate = 255;
+    
     [SerializeField] List<LearnableMove> learnableMoves;
 
     //checks to see if mon is player's current active
     public bool isFirst;
 
 
-
+    //Properties
     public string MonName
     {
         get { return monName; }
@@ -79,6 +82,8 @@ public class MonsterBase : ScriptableObject
     {
         get { return speed; }
     }
+    public int CatchRate => catchRate;
+
 
     public List<LearnableMove> LearnableMoves
     {

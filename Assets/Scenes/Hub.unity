@@ -21683,8 +21683,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5617197924254975739, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 596508421}
+    - target: {fileID: 5617197924254975739, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
       propertyPath: m_RenderMode
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5617197924254975739, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5617197924254975739, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 2020749385
       objectReference: {fileID: 0}
     - target: {fileID: 5617197924254975739, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
@@ -21786,6 +21798,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7007940901842032545, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7007940901842032545, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0ae2b74b1edd14bb18dd7b65ae916a54, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63843f53de01d15429dc2f080b1b83cf, type: 3}
 --- !u!114 &1603041379 stripped
@@ -21848,6 +21868,7 @@ MonoBehaviour:
   enemySprite: {fileID: 1708747233}
   dialogueBox: {fileID: 2042691036}
   partyScreen: {fileID: 1603041379}
+  ball: {fileID: 5976592337731374463, guid: bc114e55ea28f054182052de13afd20c, type: 3}
 --- !u!1 &1707213735
 GameObject:
   m_ObjectHideFlags: 0

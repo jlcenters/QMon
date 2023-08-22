@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ public enum BattleState
 public enum BattleAction
 {
     Move,
-    SwitchPokemon,
+    SwitchMon,
     UseItem,
     Run
 }
@@ -33,7 +34,6 @@ public class BattleSystem : MonoBehaviour
 {
     //sprite details
     [SerializeField] BattleSprite playerSprite;
-
     [SerializeField] BattleSprite enemySprite;
 
     //UI details
@@ -51,12 +51,15 @@ public class BattleSystem : MonoBehaviour
     //monster select reference
     [SerializeField] PartyScreen partyScreen;
 
+    //qball reference
+    [SerializeField] GameObject ball;
+
     //event to determine whether or not player won battle
     public event Action<bool> OnBattleOver;
 
     MonParty playerParty;
     Monster wildMon;
-
+    int escapeAttempts;
 
 
     //Setup
@@ -64,6 +67,7 @@ public class BattleSystem : MonoBehaviour
      {
         playerParty = party;
         wildMon = encounter;
+        escapeAttempts = 0;
         StartCoroutine(SetUpBattle());
     }
 
@@ -100,7 +104,6 @@ public class BattleSystem : MonoBehaviour
 
     void OpenPartyScreen()
     {
-/**/        Debug.Log("opening party screen");
         state = BattleState.PartyScreen;
 
         partyScreen.SetPartyData(playerParty.Monsters);
@@ -132,7 +135,7 @@ public class BattleSystem : MonoBehaviour
     {
         state = BattleState.RunningTurn;
 
-        //if player chooses to attack, preform moves in order of speed; else, player preforms action first always
+        //if player chooses to attack, preform moves in order of speed; else, player preforms their other action
         if (action == BattleAction.Move)
         {
             //grab player and enemy choices
@@ -146,7 +149,7 @@ public class BattleSystem : MonoBehaviour
 
             //if enemy move has a higher priority (lower number), enemy goes first; else, if their moves share the same priority, highest speed goes first
             //PRIORITY KEY: 0-flee, 1-switch, 2-items, 3-attack
-            if(enemyPriority < playerPriority)
+            if (enemyPriority < playerPriority)
             {
                 playerFirst = false;
             }
@@ -176,14 +179,22 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
-            //if action chosen is to switch current mon out, do so
-            if(action == BattleAction.SwitchPokemon)
+            //go to action coroutine which is determined by state
+            if(action == BattleAction.SwitchMon)
             {
                 var selectedMon = playerParty.Monsters[currentPartyMember];
                 state = BattleState.Busy;
                 yield return SwitchMonster(selectedMon);
             }
-
+            else if(action == BattleAction.UseItem)
+            {
+                dialogueBox.EnableActionSelector(false);
+                yield return ThrowBall();
+            }
+            else if(action == BattleAction.Run)
+            {
+                yield return TryToEscape();
+            }
             //enemy's turn
             GetEnemyAction();
             yield return RunMove(enemySprite, playerSprite, enemySprite.Mon.CurrentMove);
@@ -234,6 +245,124 @@ public class BattleSystem : MonoBehaviour
         }
     }
 
+    IEnumerator ThrowBall()
+    {
+        state = BattleState.Busy;
+        yield return dialogueBox.TypeDialogue("Used QBall!");
+
+        var catchObj = Instantiate(ball, playerSprite.transform.position - new Vector3(2, 0), Quaternion.identity);
+        var catchObjSprite = catchObj.GetComponent<SpriteRenderer>();
+
+        //animate ball being thrown and mon going into ball
+        yield return catchObjSprite.transform.DOJump(enemySprite.transform.position + new Vector3(0, 2), 1f, 1, 1f).WaitForCompletion();
+        yield return enemySprite.CatchingAnimation();
+        yield return catchObjSprite.transform.DOMoveY(enemySprite.transform.position.y - 1, 0.5f).WaitForCompletion();
+
+        int shakeCount = TryToCatch(enemySprite.Mon);
+
+
+        //animate shaking up to three times
+        for (int i = 0; i < Mathf.Min(shakeCount, 3); i++)
+        {
+            yield return catchObjSprite.transform.DOPunchRotation(new Vector3(0, 0, 10), 0.8f).WaitForCompletion();
+            yield return new WaitForSeconds(0.5f);
+        }
+
+        //if Shake Count is 4, catch mon and end game; else, escape ball and continue game
+        if (shakeCount == 4)
+        {
+            //caught
+            yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} was caught!");
+            yield return catchObjSprite.DOFade(0f, 1.5f).WaitForCompletion();
+
+            playerParty.AddMon(enemySprite.Mon);
+            yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} has been added to your party.");
+
+            Destroy(catchObjSprite);
+            BattleOver(true);
+
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f);
+            catchObjSprite.DOFade(0, 0.2f);
+            yield return enemySprite.CatchingFailAnimation();
+
+            //if shook up to 2 times, normal dialogue; else, almost had it
+            if(shakeCount <= 2)
+            {
+                yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} broke free!");
+
+            }
+            else
+            {
+                yield return dialogueBox.TypeDialogue($"Almost had it!");
+            }
+
+            Destroy(catchObjSprite);
+
+            state = BattleState.RunningTurn;
+        }
+
+    }
+
+    int TryToCatch(Monster mon)
+    {
+        int statusBonus = 1;
+        float a = (3 * mon.MaxHp - 2 * mon.Hp) * mon.MonBase.CatchRate * statusBonus / (3 * mon.MaxHp);
+        if(a >= 255)
+        {
+            return 4;
+        }
+
+        float b = 1048560 / Mathf.Sqrt(Mathf.Sqrt(16711680 / a));
+
+        int shakeCount = 0;
+
+        while(shakeCount < 4)
+        {
+            if(UnityEngine.Random.Range(0, 65535) >= b)
+            {
+                break;
+            }
+            shakeCount++;
+        }
+
+        return shakeCount;
+    }
+
+    IEnumerator TryToEscape()
+    {
+        state = BattleState.Busy;
+
+        escapeAttempts++;
+        int playerSpeed = playerSprite.Mon.Speed;
+        int enemySpeed = enemySprite.Mon.Speed;
+        
+        if(enemySpeed < playerSpeed)
+        {
+            yield return dialogueBox.TypeDialogue("Got away safely!");
+            BattleOver(true);
+        }
+        else
+        {
+            float f = (playerSpeed * 128) / enemySpeed + 30 * escapeAttempts;
+            f %= 256;
+
+            if(UnityEngine.Random.Range(0, 256) < f)
+            {
+                yield return dialogueBox.TypeDialogue("Got away safely!");
+                BattleOver(true);
+            }
+            else
+            {
+                yield return dialogueBox.TypeDialogue("You couldn't escape!");
+                state = BattleState.RunningTurn;
+            }
+        }
+        yield return null;
+    }
+
 
 
     //Move State Methods
@@ -279,7 +408,12 @@ public class BattleSystem : MonoBehaviour
             //if status move target is the enemy, direct towards enemy sprite; else, direct towards source sprite
             if (move.Base.Target == MoveTarget.Foe)
             {
+                //foreach (var boost in target.StatusChanges)
+                //{
+                    
+                //}
                 target.ApplyBoosts(effects.Boosts);
+
             }
             else
             {
@@ -316,7 +450,7 @@ public class BattleSystem : MonoBehaviour
 
     IEnumerator ShowStatusChanges(Monster mon)
     {
-        while(mon.StatusChanges.Count > 0)
+        while (mon.StatusChanges.Count > 0)
         {
             var message = mon.StatusChanges.Dequeue();
             yield return dialogueBox.TypeDialogue(message);
@@ -369,6 +503,7 @@ public class BattleSystem : MonoBehaviour
         {
             HandlePartySelection();
         }
+        
     }
 
 
@@ -431,13 +566,13 @@ public class BattleSystem : MonoBehaviour
                 if (currentAction == 2)
                 {
                     //bag
-                    Debug.Log("check bag");
+                    StartCoroutine(RunTurns(BattleAction.UseItem));
 
                 }
                 else
                 {
                     //run
-                    Debug.Log("Got away safely!");
+                    StartCoroutine(RunTurns(BattleAction.Run));
 
                 }
             }
@@ -493,6 +628,7 @@ public class BattleSystem : MonoBehaviour
             dialogueBox.EnableMoveSelector(false);
             dialogueBox.EnableDialogueText(true);
             previousState = BattleState.RunningTurn;
+            Debug.Log("attack chosen");
             StartCoroutine(RunTurns(BattleAction.Move));
         }
         else if (Input.GetKeyDown(KeyCode.Backspace))
@@ -552,16 +688,14 @@ public class BattleSystem : MonoBehaviour
                 //if the player's mon had fainted, allow player to choose new mon before starting a new turn; else, run turns as usual
                 if(previousState == BattleState.RunningTurn)
                 {
-/**/                    Debug.Log("previous mon had fainted, resetting previousState and starting the SwitchMonster coroutine");
                     previousState = null;
                     StartCoroutine(SwitchMonster(selectedMember));
                 }
                 else
                 {
-/**/                    Debug.Log("previous mon did not faint, continue to enemy turn");
                     state = BattleState.Busy;
                     previousState = null;
-                    StartCoroutine(RunTurns(BattleAction.SwitchPokemon));
+                    StartCoroutine(RunTurns(BattleAction.SwitchMon));
                 }
             }
         }

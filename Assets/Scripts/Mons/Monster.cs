@@ -18,6 +18,14 @@ public class Monster
         } 
     }
 
+    //Constructor
+    public Monster(MonsterBase _base, int lvl)
+    {
+        monBase = _base;
+        level = lvl;
+
+        Init();
+    }
     //current stats which reference the base
     public int Level {
         get {
@@ -55,6 +63,7 @@ public class Monster
     //TODO: new formulas or new base stats; current stats do not match with formulas
     //TODO: on level up; check monster for special bonuses to stats
     //TODO - STRETCH: after lv 10,15,20, give a one-time bonus to stats
+
 
 
     //Initializes all public stats
@@ -117,12 +126,10 @@ public class Monster
         {
             statVal = Mathf.FloorToInt(statVal / boostValues[-boost]);
         }
-
         return statVal;
     }
 
     //during status effect move, apply boosts to separate object which will be referenced to when grabbing the Get Stat method each turn
-    
     public void ApplyBoosts(List<StatBoost> statBoosts)
     {
         foreach(var statBoost in statBoosts)
@@ -132,7 +139,6 @@ public class Monster
 
             //add boost value to dictionary
             StatBoost[stat] = Mathf.Clamp(StatBoost[stat] + boost, -6, 6);
-
             //add to queue each status change to be displayed in UI
             if(boost > 0)
             {
@@ -140,7 +146,12 @@ public class Monster
             }
             else
             {
+                if(StatusChanges == null)
+                {
+                    StatusChanges = new Queue<string>();
+                }
                 StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} fell!");
+
             }
         }
     }

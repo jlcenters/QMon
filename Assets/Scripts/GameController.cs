@@ -46,7 +46,8 @@ public class GameController : MonoBehaviour
 
         var playerParty = playerController.GetComponent<MonParty>();
         var wildMon = FindObjectOfType<MapArea>().GetComponent<MapArea>().GetRandomWildMon();
-        battleSystem.StartBattle(playerParty, wildMon);
+        var copy = new Monster(wildMon.MonBase, wildMon.Level);
+        battleSystem.StartBattle(playerParty, copy);
     }
 
     void EndBattle(bool won)

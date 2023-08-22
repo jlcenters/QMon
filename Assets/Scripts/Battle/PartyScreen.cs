@@ -12,7 +12,7 @@ public class PartyScreen : MonoBehaviour
 
     public void Init()
     {
-        members = GetComponentsInChildren<PartyMemberUI>();
+        members = GetComponentsInChildren<PartyMemberUI>(true);
     }
 
     public void SetPartyData(List<Monster> mons)
@@ -23,6 +23,7 @@ public class PartyScreen : MonoBehaviour
         {
             if(i < mons.Count)
             {
+                members[i].gameObject.SetActive(true);
                 members[i].SetData(mons[i]);
             }
             else

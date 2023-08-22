@@ -60,6 +60,7 @@ public class BattleSprite : MonoBehaviour
 
         hud.SetData(mon);
 
+        transform.localScale = new Vector3(1f, 1f, 1f);
         img.color = originalColor;
         EnterAnimation();
 
@@ -111,5 +112,23 @@ public class BattleSprite : MonoBehaviour
 
         sequence.Append(img.transform.DOLocalMoveY(originalPos.y - 150, 0.5f));
         sequence.Join(img.DOFade(0f, 0.25f));
+    }
+
+    public IEnumerator CatchingAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(img.DOFade(0, 0.5f));
+        sequence.Join(transform.DOLocalMoveY(originalPos.y + 50f, 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(0.3f, 0.3f, 1f), 0.5f));
+        yield return sequence.WaitForCompletion();
+    }
+
+    public IEnumerator CatchingFailAnimation()
+    {
+        var sequence = DOTween.Sequence();
+        sequence.Append(img.DOFade(1, 0.5f));
+        sequence.Join(transform.DOLocalMoveY(originalPos.y, 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f));
+        yield return sequence.WaitForCompletion();
     }
 }
