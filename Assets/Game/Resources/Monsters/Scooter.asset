@@ -18,11 +18,13 @@ MonoBehaviour:
   frontSprite: {fileID: 4878814325780760736, guid: 12748af5ea6565f4790ecf28eec5dce7, type: 3}
   backSprite: {fileID: -8984335542571188115, guid: 18d1dce684e8f374c847a3c69a682d41, type: 3}
   maxHp: 50
-  maxXp: 0
+  baseXp: 75
+  growthRate: 1
   attack: 1
   block: 3
   element: 3
   speed: 6
+  catchRate: 255
   learnableMoves:
   - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
     level: 0

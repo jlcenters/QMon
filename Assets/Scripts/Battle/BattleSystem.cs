@@ -392,10 +392,7 @@ public class BattleSystem : MonoBehaviour
         //if hp reaches 0, begin faint sequence
         if (targetSprite.Mon.Hp <= 0)
         {
-            targetSprite.FaintAnimation();
-            yield return dialogueBox.TypeDialogue($"{targetSprite.Mon.MonBase.MonName} fainted!");
-            yield return new WaitForSeconds(1f);
-            CheckForBattleOver(targetSprite);
+            yield return FaintingSequence(targetSprite);
         }
     }
 
@@ -484,6 +481,38 @@ public class BattleSystem : MonoBehaviour
         }
         //waits until state is back to Running Turn before executing
         yield return new WaitUntil(() => state == BattleState.RunningTurn);
+    }
+
+    IEnumerator FaintingSequence(BattleSprite fainted)
+    {
+        fainted.FaintAnimation();
+        yield return dialogueBox.TypeDialogue($"{fainted.Mon.MonBase.MonName} fainted!");
+        yield return new WaitForSeconds(1f);
+
+        //if enemy fainted, give xp to playermon
+        if (!fainted.IsPlayermon)
+        {
+            //gain XP
+            int xpYield = playerSprite.Mon.MonBase.BaseXp;
+            int enemyLvl = enemySprite.Mon.Level;
+            int xpGained = Mathf.FloorToInt((xpYield * enemyLvl) / 7); ;
+
+            //add new XP to mon and display dialogue text
+            playerSprite.Mon.Xp += xpGained;
+            yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} gained {xpGained} XP!");
+            yield return playerSprite.Hud.UpdateXP();
+
+            //check if able to level up
+            while(playerSprite.Mon.LeveledUp())
+            {
+                //level up!
+                playerSprite.Hud.SetLevel();
+                yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} is now level {playerSprite.Mon.Level}!");
+                yield return playerSprite.Hud.UpdateXP(true);
+            }
+        }
+
+        CheckForBattleOver(fainted);
     }
 
 
@@ -710,7 +739,4 @@ public class BattleSystem : MonoBehaviour
             state = BattleState.ActionSelection;
         }
     }
-
-
-
 }

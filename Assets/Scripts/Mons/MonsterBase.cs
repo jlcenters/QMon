@@ -25,7 +25,8 @@ public class MonsterBase : ScriptableObject
 
     //Base Stats
     [SerializeField] int maxHp;
-    [SerializeField] int maxXp;
+    [SerializeField] int baseXp;
+    [SerializeField] GrowthRate growthRate;
 
     [SerializeField] int attack;
     [SerializeField] int block;
@@ -34,11 +35,29 @@ public class MonsterBase : ScriptableObject
 
     //between 0 and 255; lower the catch rate harder it is to catch
     [SerializeField] int catchRate = 255;
-    
+
     [SerializeField] List<LearnableMove> learnableMoves;
 
     //checks to see if mon is player's current active
     public bool isFirst;
+
+
+
+    //checks required xp to level up
+    public int GetXpForLevel(int level)
+    {
+        if(growthRate == GrowthRate.Fast)
+        {
+            return 4 * Mathf.FloorToInt(Mathf.Pow(level, 3f)) / 7;
+        }
+        else if(growthRate == GrowthRate.Medium)
+        {
+            return Mathf.FloorToInt(Mathf.Pow(level, 3f));
+        }
+        //no slow rate yet, so will return error code
+        return -1;
+    }
+
 
 
     //Properties
@@ -66,6 +85,11 @@ public class MonsterBase : ScriptableObject
     {
         get { return maxHp; }
     }
+    public int BaseXp
+    {
+        get { return baseXp; }
+    }
+    public GrowthRate GrowthRate => growthRate;
     public int Attack
     {
         get { return attack; }
@@ -83,14 +107,11 @@ public class MonsterBase : ScriptableObject
         get { return speed; }
     }
     public int CatchRate => catchRate;
-
-
     public List<LearnableMove> LearnableMoves
     {
         get { return learnableMoves; }
     }
 }
-
 
 
 
@@ -170,4 +191,14 @@ public class TypeChart
         //will return float of effectiveness based on chart
         return chart[row][col];
     }
+}
+
+
+
+//How fast does the mon gain XP upon leveling up?
+public enum GrowthRate
+{
+    Slow,
+    Medium,
+    Fast
 }

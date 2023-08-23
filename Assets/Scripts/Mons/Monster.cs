@@ -69,9 +69,6 @@ public class Monster
     //Initializes all public stats
     public void Init()
     {
-        //grabs references to base and stats
-        Hp = MaxHp;
-
         //grabbing available moves
         Moves = new List<Move>();
         foreach (var move in MonBase.LearnableMoves)
@@ -89,11 +86,11 @@ public class Monster
             }
         }
 
+        Xp = MonBase.GetXpForLevel(Level);
         CalculateStats();
-
         Hp = MaxHp;
-
         ResetStatBoost();
+        StatusChanges = new Queue<string>();
     }
 
     //Initializing stats referencing the base
@@ -128,6 +125,8 @@ public class Monster
         }
         return statVal;
     }
+
+
 
     //during status effect move, apply boosts to separate object which will be referenced to when grabbing the Get Stat method each turn
     public void ApplyBoosts(List<StatBoost> statBoosts)
@@ -220,6 +219,19 @@ public class Monster
         return usableMoves[r];
     }
 
+
+
+    public bool LeveledUp()
+    {
+        //if xp went to 
+        if(Xp > monBase.GetXpForLevel(Level + 1))
+        {
+            level++;
+            return true;
+        }
+
+        return false;
+    }
 
 
 

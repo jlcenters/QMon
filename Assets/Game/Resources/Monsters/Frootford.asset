@@ -18,7 +18,8 @@ MonoBehaviour:
   frontSprite: {fileID: 3597704810462396357, guid: 79c61d9500006b7458fe2989f025a629, type: 3}
   backSprite: {fileID: 727785045931379112, guid: 79c61d9500006b7458fe2989f025a629, type: 3}
   maxHp: 50
-  maxXp: 0
+  baseXp: 75
+  growthRate: 1
   attack: 3
   block: 6
   element: 3

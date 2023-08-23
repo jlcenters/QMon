@@ -37,8 +37,9 @@ public class BattleDialogueBox : MonoBehaviour
             dialogue.text += letter;
 
             //will display specified number of letters per second
-            yield return new WaitForSeconds(1f/lettersPerSecond);
+            yield return new WaitForSeconds(1f / lettersPerSecond);
         }
+        yield return new WaitForSeconds(0.5f);
     }
     public void SetDialogue(string txt)
     {
