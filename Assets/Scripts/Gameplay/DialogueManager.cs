@@ -16,7 +16,8 @@ public class DialogueManager : MonoBehaviour
     public float lettersPerSecond;
     int currentLine = 0;
     Dialogue lines;
-    bool isTyping;
+
+    public bool isTyping;
 
 
     //to reference instance throughout the game
@@ -74,7 +75,8 @@ public class DialogueManager : MonoBehaviour
             //will display specified number of letters per second
             yield return new WaitForSeconds(1f / lettersPerSecond);
         }
-
         isTyping = false;
+        yield return new WaitForSeconds(1f);
+
     }
 }

@@ -80,7 +80,7 @@ public class Monster
             }
 
             //if list contains 4 or more moves, break loop
-            if (Moves.Count >= 4)
+            if (Moves.Count >= MonsterBase.maxMoves)
             {
                 break;
             }
@@ -235,9 +235,35 @@ public class Monster
 
 
 
+    public void LearnMove(LearnableMove newMove)
+    {
+        if(Moves.Count > MonsterBase.maxMoves)
+        {
+            return;
+        }
+
+        Moves.Add(new Move (newMove.Base));
+    }
+
+
+
+    public void Heal()
+    {
+        Hp = MaxHp;
+        //TODO: when incorporating health potions, add event that will update all hp ui when hp has been changed
+    }
+
+
+
     public void OnBattleOver()
     {
         ResetStatBoost();
+    }
+
+
+    public LearnableMove GetCurrentMove()
+    {
+        return MonBase.LearnableMoves.Where(x => x.Level == level).FirstOrDefault();
     }
 
 

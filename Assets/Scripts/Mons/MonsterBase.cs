@@ -41,6 +41,8 @@ public class MonsterBase : ScriptableObject
     //checks to see if mon is player's current active
     public bool isFirst;
 
+    public static int maxMoves = 4;
+
 
 
     //checks required xp to level up

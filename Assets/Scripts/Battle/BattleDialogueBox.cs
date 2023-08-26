@@ -24,8 +24,6 @@ public class BattleDialogueBox : MonoBehaviour
 
 
 
-
-
     // Displaying text in text boxes
     public IEnumerator TypeDialogue(string message)
     {
