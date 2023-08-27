@@ -113,8 +113,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 6}
-  m_SizeDelta: {x: -2, y: 9}
+  m_AnchoredPosition: {x: 0.000022888184, y: 21.7}
+  m_SizeDelta: {x: -2, y: 13}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7086188474340583384
 CanvasRenderer:
@@ -262,6 +262,7 @@ MonoBehaviour:
   lvTxt: {fileID: 7086188475985062184}
   hpTxt: {fileID: 7086188475730638289}
   hpBar: {fileID: 5250595399758837867}
+  xpBar: {fileID: 0}
 --- !u!1 &7086188475465405434
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +414,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7086188475730638294
 RectTransform:
   m_ObjectHideFlags: 0

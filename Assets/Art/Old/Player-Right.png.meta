@@ -1,13 +1,16 @@
 fileFormatVersion: 2
-guid: 551a317e453ada541b7cb108f7355473
+guid: accbdec6b69e3df4c887f87fe995f383
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 371049046489346875
-    second: Frootford-Enemy_0
+      213: 4438386177874065929
+    second: Player-Right_0
   - first:
-      213: -1996048185831150319
-    second: Frootford-Enemy_1
+      213: 3912246864767173906
+    second: Player-Right_1
+  - first:
+      213: 643810934748535321
+    second: Player-Right_2
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -109,43 +112,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Frootford-Enemy_0
+      name: Player-Right_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 509
+        width: 70
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b33be32542b362500800000000000000
-      internalID: 371049046489346875
+      spriteID: 90aff2496b0589d30800000000000000
+      internalID: 4438386177874065929
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frootford-Enemy_1
+      name: Player-Right_1
       rect:
         serializedVersion: 2
-        x: 512
+        x: 102
         y: 0
-        width: 512
-        height: 512
+        width: 70
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11da8f020cc9c44e0800000000000000
-      internalID: -1996048185831150319
+      spriteID: 2154518abc71b4630800000000000000
+      internalID: 3912246864767173906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player-Right_2
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 0
+        width: 71
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91ad23452a64fe800800000000000000
+      internalID: 643810934748535321
       vertices: []
       indices: 
       edges: []

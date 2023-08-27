@@ -15,8 +15,8 @@ MonoBehaviour:
   monName: Frootford
   description: 
   type: 3
-  frontSprite: {fileID: 8537735880338469662, guid: f3e51763ac787fc4da0e17df196f7986, type: 3}
-  backSprite: {fileID: 371049046489346875, guid: 551a317e453ada541b7cb108f7355473, type: 3}
+  frontSprite: {fileID: 371049046489346875, guid: 551a317e453ada541b7cb108f7355473, type: 3}
+  backSprite: {fileID: 8537735880338469662, guid: f3e51763ac787fc4da0e17df196f7986, type: 3}
   maxHp: 50
   baseXp: 75
   growthRate: 1

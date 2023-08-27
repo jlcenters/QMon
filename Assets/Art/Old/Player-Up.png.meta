@@ -1,13 +1,16 @@
 fileFormatVersion: 2
-guid: 551a317e453ada541b7cb108f7355473
+guid: f413929a53b18964c8cdc35c46c13fd3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 371049046489346875
-    second: Frootford-Enemy_0
+      213: 3604890001087756191
+    second: Player-Up_0
   - first:
-      213: -1996048185831150319
-    second: Frootford-Enemy_1
+      213: 2093887135547802641
+    second: Player-Up_1
+  - first:
+      213: -3517163560760194113
+    second: Player-Up_2
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -109,43 +112,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Frootford-Enemy_0
+      name: Player-Up_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 509
+        width: 84
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b33be32542b362500800000000000000
-      internalID: 371049046489346875
+      spriteID: f9771314b54270230800000000000000
+      internalID: 3604890001087756191
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frootford-Enemy_1
+      name: Player-Up_1
       rect:
         serializedVersion: 2
-        x: 512
+        x: 109
         y: 0
-        width: 512
-        height: 512
+        width: 77
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11da8f020cc9c44e0800000000000000
-      internalID: -1996048185831150319
+      spriteID: 1144612814bfe0d10800000000000000
+      internalID: 2093887135547802641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player-Up_2
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 0
+        width: 83
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbbc0ff4066803fc0800000000000000
+      internalID: -3517163560760194113
       vertices: []
       indices: 
       edges: []

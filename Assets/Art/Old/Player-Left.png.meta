@@ -1,13 +1,16 @@
 fileFormatVersion: 2
-guid: 551a317e453ada541b7cb108f7355473
+guid: 8fda92f8d5b15f14fa951d7b0f0362ab
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 371049046489346875
-    second: Frootford-Enemy_0
+      213: 8213780416876598142
+    second: Player-Left_0
   - first:
-      213: -1996048185831150319
-    second: Frootford-Enemy_1
+      213: -6212087011339912752
+    second: Player-Left_1
+  - first:
+      213: -1760704381509460429
+    second: Player-Left_2
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -109,13 +112,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Frootford-Enemy_0
+      name: Player-Left_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 509
+        width: 71
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -123,20 +126,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b33be32542b362500800000000000000
-      internalID: 371049046489346875
+      spriteID: e735dfa45c53df170800000000000000
+      internalID: 8213780416876598142
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frootford-Enemy_1
+      name: Player-Left_1
       rect:
         serializedVersion: 2
-        x: 512
+        x: 103
         y: 0
-        width: 512
-        height: 512
+        width: 70
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -144,8 +147,29 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11da8f020cc9c44e0800000000000000
-      internalID: -1996048185831150319
+      spriteID: 0d93447b6cb3ac9a0800000000000000
+      internalID: -6212087011339912752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player-Left_2
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 0
+        width: 70
+        height: 128
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33e97a191b8b097e0800000000000000
+      internalID: -1760704381509460429
       vertices: []
       indices: 
       edges: []

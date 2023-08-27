@@ -1,13 +1,16 @@
 fileFormatVersion: 2
-guid: 551a317e453ada541b7cb108f7355473
+guid: a3d0f83eb91dfb3429ce880c2cfef640
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 371049046489346875
-    second: Frootford-Enemy_0
+      213: 540153482128092418
+    second: Player-Down_0
   - first:
-      213: -1996048185831150319
-    second: Frootford-Enemy_1
+      213: -815116999915458419
+    second: Player-Down_1
+  - first:
+      213: -1706626796138435553
+    second: Player-Down_2
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -109,43 +112,64 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Frootford-Enemy_0
+      name: Player-Down_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 512
-        height: 509
+        width: 86
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b33be32542b362500800000000000000
-      internalID: 371049046489346875
+      spriteID: 20d6f6aeab20f7700800000000000000
+      internalID: 540153482128092418
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Frootford-Enemy_1
+      name: Player-Down_1
       rect:
         serializedVersion: 2
-        x: 512
+        x: 114
         y: 0
-        width: 512
-        height: 512
+        width: 86
+        height: 128
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 11da8f020cc9c44e0800000000000000
-      internalID: -1996048185831150319
+      spriteID: d8038a1486f10b4f0800000000000000
+      internalID: -815116999915458419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player-Down_2
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 0
+        width: 85
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1c610498f7d058e0800000000000000
+      internalID: -1706626796138435553
       vertices: []
       indices: 
       edges: []
