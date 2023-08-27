@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
 {
     public float overlapCircle;
     public float speed;
-    public CharacterStatus storedData;
     bool isMoving;
 
     public LayerMask solidObjectLayer;
@@ -25,6 +24,8 @@ public class PlayerController : MonoBehaviour
     {
         ani = GetComponent<Animator>();
     }
+
+
 
     public void HandleUpdate()
     {
@@ -102,8 +103,6 @@ public class PlayerController : MonoBehaviour
 
         //find line which player can interact
         var interactableFace = transform.position + playerFace;
-
-/**/        Debug.DrawLine(transform.position, interactableFace, Color.red, .5f);
 
         //if there is an interactable object in the interactable range, initiate Interact method
         var collider = Physics2D.OverlapCircle(interactableFace, overlapCircle, interactablesLayer);

@@ -15,7 +15,7 @@ MonoBehaviour:
   monName: Worm
   description: Worm.
   type: 4
-  frontSprite: {fileID: 21300000, guid: 10af14569422bfe48aadd7f83a2e3ae2, type: 3}
+  frontSprite: {fileID: -3728315759926920429, guid: e78017735267bbd4c9fecbaed436e56d, type: 3}
   backSprite: {fileID: 21300000, guid: 10af14569422bfe48aadd7f83a2e3ae2, type: 3}
   maxHp: 30
   baseXp: 50

@@ -11,8 +11,9 @@ public class BattleDialogueBox : MonoBehaviour
     [SerializeField] TMP_Text dialogue;
 
     //Action View
+    [SerializeField] TextMeshProUGUI qballText;
     [SerializeField] GameObject actionSelector;
-    [SerializeField] List<TMP_Text> actionTexts;
+    [SerializeField] List<TextMeshProUGUI> actionTexts;
     [SerializeField] Color highlightedColor;
 
     //Move View
@@ -49,9 +50,10 @@ public class BattleDialogueBox : MonoBehaviour
     {
         dialogue.enabled = isEnabled;
     }
-    public void EnableActionSelector(bool isEnabled)
+    public void EnableActionSelector(bool isEnabled, int qballCount)
     {
         actionSelector.SetActive(isEnabled);
+        UpdateQballText($"Catch (x{qballCount})");
     }
     public void EnableMoveSelector(bool isEnabled)
     {
@@ -105,6 +107,11 @@ public class BattleDialogueBox : MonoBehaviour
             ppText.color = Color.black;
         }
 
+    }
+
+    public void UpdateQballText(string text)
+    {
+        qballText.text = text;
     }
 
     public void SetMoveNames(List<Move> moves)

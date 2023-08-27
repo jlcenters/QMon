@@ -15,8 +15,8 @@ MonoBehaviour:
   monName: Bobbol
   description: 
   type: 2
-  frontSprite: {fileID: -7601397503232991426, guid: 1be015f6ac82f4a4880df9018e63a03e, type: 3}
-  backSprite: {fileID: -5336062205536834150, guid: 1be015f6ac82f4a4880df9018e63a03e, type: 3}
+  frontSprite: {fileID: 2482479371675322864, guid: 1db0f7ce69260a140a670365101110ef, type: 3}
+  backSprite: {fileID: -3093200439202048760, guid: 58b689f5604939a41a445918d50e3c53, type: 3}
   maxHp: 50
   baseXp: 75
   growthRate: 1

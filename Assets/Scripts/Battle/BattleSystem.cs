@@ -62,6 +62,7 @@ public class BattleSystem : MonoBehaviour
     //event to determine whether or not player won battle
     public event Action<bool> OnBattleOver;
 
+    public int QballCount { get; private set; }
     MonParty playerParty;
     Monster wildMon;
     int escapeAttempts;
@@ -69,10 +70,11 @@ public class BattleSystem : MonoBehaviour
 
 
     //Setup
-    public void StartBattle(MonParty party, Monster encounter)
+    public void StartBattle(MonParty party, Monster encounter, int qballAmount)
      {
         playerParty = party;
         wildMon = encounter;
+        QballCount = qballAmount;
         escapeAttempts = 0;
         StartCoroutine(SetUpBattle());
     }
@@ -88,6 +90,9 @@ public class BattleSystem : MonoBehaviour
 
         //assign moves to Move Selector
         dialogueBox.SetMoveNames(playerSprite.Mon.Moves);
+
+        //set catch ui
+        //dialogueBox.UpdateQballText("Catch");
 
         //begin process of displaying dialogue box
         yield return StartCoroutine(dialogueBox.TypeDialogue($"A wild {enemySprite.Mon.MonBase.MonName} appeared!"));
@@ -105,7 +110,7 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.ActionSelection;
 
         dialogueBox.SetDialogue("What will you do?");
-        dialogueBox.EnableActionSelector(true);
+        dialogueBox.EnableActionSelector(true, QballCount);
     }
 
     void OpenPartyScreen()
@@ -118,7 +123,7 @@ public class BattleSystem : MonoBehaviour
 
     void MoveSelection()
     {
-        dialogueBox.EnableActionSelector(false);
+        dialogueBox.EnableActionSelector(false, QballCount);
         dialogueBox.EnableDialogueText(false);
         dialogueBox.EnableMoveSelector(true);
 
@@ -131,6 +136,7 @@ public class BattleSystem : MonoBehaviour
 
         //resets stat boosts of all mons in player party
         playerParty.Monsters.ForEach(m => m.OnBattleOver());
+        
         OnBattleOver(isWin);
     }
 
@@ -194,7 +200,7 @@ public class BattleSystem : MonoBehaviour
             }
             else if(action == BattleAction.UseItem)
             {
-                dialogueBox.EnableActionSelector(false);
+                dialogueBox.EnableActionSelector(false, QballCount);
                 yield return ThrowBall();
             }
             else if(action == BattleAction.Run)
@@ -254,6 +260,8 @@ public class BattleSystem : MonoBehaviour
     IEnumerator ThrowBall()
     {
         state = BattleState.Busy;
+
+        QballCount--;
         yield return dialogueBox.TypeDialogue("Used QBall!");
 
         var catchObj = Instantiate(ball, playerSprite.transform.position - new Vector3(2, 0), Quaternion.identity);
@@ -347,6 +355,7 @@ public class BattleSystem : MonoBehaviour
         
         if(enemySpeed < playerSpeed)
         {
+            dialogueBox.EnableActionSelector(false, QballCount);
             yield return dialogueBox.TypeDialogue("Got away safely!");
             BattleOver(true);
         }
@@ -658,8 +667,14 @@ public class BattleSystem : MonoBehaviour
                 if (currentAction == 2)
                 {
                     //bag
-                    StartCoroutine(RunTurns(BattleAction.UseItem));
-
+                    if(QballCount > 0)
+                    {
+                        StartCoroutine(RunTurns(BattleAction.UseItem));
+                    }
+                    else
+                    {
+                        StartCoroutine(dialogueBox.TypeDialogue("You have no more Qballs!"));
+                    }
                 }
                 else
                 {
@@ -726,7 +741,7 @@ public class BattleSystem : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Backspace))
         {
             dialogueBox.EnableMoveSelector(false);
-            dialogueBox.EnableActionSelector(true);
+            dialogueBox.EnableActionSelector(true,QballCount);
             dialogueBox.EnableDialogueText(true);
             state = BattleState.ActionSelection;
         }
@@ -797,7 +812,7 @@ public class BattleSystem : MonoBehaviour
             currentPartyMember = 0;
             partyScreen.UpdateMonsterSelection(currentPartyMember);
             partyScreen.gameObject.SetActive(false);
-            dialogueBox.EnableActionSelector(true);
+            dialogueBox.EnableActionSelector(true,QballCount);
             dialogueBox.EnableDialogueText(true);
             state = BattleState.ActionSelection;
         }

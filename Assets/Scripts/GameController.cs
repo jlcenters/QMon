@@ -45,13 +45,15 @@ public class GameController : MonoBehaviour
         mainCamera.gameObject.SetActive(false);
 
         var playerParty = playerController.GetComponent<MonParty>();
+        var qballCount = playerController.GetComponent<Inventory>().Qballs;
         var wildMon = FindObjectOfType<MapArea>().GetComponent<MapArea>().GetRandomWildMon();
         var copy = new Monster(wildMon.MonBase, wildMon.Level);
-        battleSystem.StartBattle(playerParty, copy);
+        battleSystem.StartBattle(playerParty, copy, qballCount);
     }
 
     void EndBattle(bool won)
     {
+        playerController.GetComponent<Inventory>().Qballs = battleSystem.QballCount;
         state = GameState.FreeRoam;
         battleSystem.gameObject.SetActive(false);
         mainCamera.gameObject.SetActive(true);
