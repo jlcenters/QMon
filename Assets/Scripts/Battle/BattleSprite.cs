@@ -49,18 +49,20 @@ public class BattleSprite : MonoBehaviour
     {
         Mon = mon;
 
+        //if player, scale x5; else, scale x2.5
         if (isPlayermon)
         {
             img.sprite = Mon.MonBase.BackSprite;
+            transform.localScale = new Vector3(5f, 5f);
         }
         else
         {
             img.sprite = Mon.MonBase.FrontSprite;
+            transform.localScale = new Vector3(2.5f, 2.5f);
         }
 
         hud.SetData(mon);
 
-        transform.localScale = new Vector3(1f, 1f, 1f);
         img.color = originalColor;
         EnterAnimation();
 
