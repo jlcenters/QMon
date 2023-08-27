@@ -24424,7 +24424,7 @@ PrefabInstance:
     - target: {fileID: 1912403020034258938, guid: 15b4cb45aa09ecb428961732a15c7724, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 33125aa0ab5202c4f8609799b79aed45, type: 3}
+      objectReference: {fileID: 21300000, guid: e3dc0e58796220d49bedbad83df173c9, type: 3}
     - target: {fileID: 1912403020034258939, guid: 15b4cb45aa09ecb428961732a15c7724, type: 3}
       propertyPath: m_Name
       value: Shop
@@ -25767,7 +25767,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1707213736
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -27137,6 +27137,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1912403020034258938, guid: 15b4cb45aa09ecb428961732a15c7724, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4526d2148d1d7ee40b47bb4abd96286e, type: 3}
     - target: {fileID: 1912403020034258939, guid: 15b4cb45aa09ecb428961732a15c7724, type: 3}
       propertyPath: m_Name
       value: Mom
