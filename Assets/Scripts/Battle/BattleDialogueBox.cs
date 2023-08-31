@@ -8,7 +8,7 @@ public class BattleDialogueBox : MonoBehaviour
 {
     //Initial Dialogue View
     [SerializeField] int lettersPerSecond;
-    [SerializeField] TMP_Text dialogue;
+    [SerializeField] TextMeshProUGUI dialogue;
 
     //Action View
     [SerializeField] TextMeshProUGUI qballText;
@@ -19,9 +19,9 @@ public class BattleDialogueBox : MonoBehaviour
     //Move View
     [SerializeField] GameObject moveSelector;
     [SerializeField] GameObject moveDetails;
-    [SerializeField] List<TMP_Text> moveTexts;
-    [SerializeField] TMP_Text ppText;
-    [SerializeField] TMP_Text elementText;
+    [SerializeField] List<TextMeshProUGUI> moveTexts;
+    [SerializeField] TextMeshProUGUI ppText;
+    [SerializeField] TextMeshProUGUI elementText;
 
 
 

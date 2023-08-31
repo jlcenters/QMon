@@ -350,10 +350,15 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.Busy;
 
         escapeAttempts++;
-        int playerSpeed = playerSprite.Mon.Speed;
-        int enemySpeed = enemySprite.Mon.Speed;
+        //int playerSpeed = playerSprite.Mon.Speed;
+        //int enemySpeed = enemySprite.Mon.Speed;
+        dialogueBox.EnableActionSelector(false, QballCount);
+        yield return dialogueBox.TypeDialogue("Got away safely!");
+        BattleOver(true);
+
         
-        if(enemySpeed < playerSpeed)
+
+        /*if (enemySpeed < playerSpeed)
         {
             dialogueBox.EnableActionSelector(false, QballCount);
             yield return dialogueBox.TypeDialogue("Got away safely!");
@@ -375,7 +380,7 @@ public class BattleSystem : MonoBehaviour
                 state = BattleState.RunningTurn;
             }
         }
-        yield return null;
+        yield return null;*/
     }
 
     IEnumerator ForgetAMove(Monster mon, MoveBase newMove)
@@ -397,6 +402,15 @@ public class BattleSystem : MonoBehaviour
     {
         //Run dialogue and animations, and reduce PP
         yield return dialogueBox.TypeDialogue($"{srcSprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
+
+        //if rng returns unit greater than accuracy value, send fail message and begin next sequence
+        if (UnityEngine.Random.Range(0, 101) > move.Base.Accuracy)
+        {
+            yield return dialogueBox.TypeDialogue($"{srcSprite.Mon.MonBase.MonName} missed!");
+            yield return new WaitForSeconds(0.5f);
+            yield break;
+        }
+
         move.PP--;
         srcSprite.AttackAnimation();
         yield return new WaitForSeconds(0.5f);
@@ -478,7 +492,7 @@ public class BattleSystem : MonoBehaviour
         {
             var message = mon.StatusChanges.Dequeue();
             yield return dialogueBox.TypeDialogue(message);
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
         }
     }
 

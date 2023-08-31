@@ -20,16 +20,17 @@ MonoBehaviour:
   maxHp: 30
   baseXp: 50
   growthRate: 1
+  peakStat: 4
   attack: 1
   block: 1
   element: 0
   speed: 1
   catchRate: 255
   learnableMoves:
-  - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
-    level: 1
   - moveBase: {fileID: 11400000, guid: 83939b75d7a58fd4bbc2d06c8202451a, type: 2}
     level: 1
+  - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
+    level: 2
   - moveBase: {fileID: 11400000, guid: 9ce46b7bd9f3c6142a9cf1f645dcda9e, type: 2}
-    level: 1
+    level: 3
   isFirst: 0

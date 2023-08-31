@@ -7,17 +7,24 @@ using UnityEngine;
 public enum GameState
 {
     FreeRoam,
+    MainMenu,
+    PauseMenu,
     Battle,
-    Dialogue
+    Dialogue,
+    GameOver
 }
 
 
 
 public class GameController : MonoBehaviour
 {
+    [SerializeField] GameObject mainMenu;
     [SerializeField] PlayerController playerController;
+    [SerializeField] GameObject pauseMenu;
     [SerializeField] BattleSystem battleSystem;
     [SerializeField] Camera mainCamera;
+    [SerializeField] GameObject gameOverScreen;
+
     GameState state;
 
     private void Start()
@@ -63,10 +70,18 @@ public class GameController : MonoBehaviour
     
     private void Update()
     {
-        if(state == GameState.FreeRoam)
+        /*if (state == GameState.MainMenu)
+        {
+            //main menu
+        }*/
+        if (state == GameState.FreeRoam)
         {
             playerController.HandleUpdate();
         }
+        /*else if (state == GameState.PauseMenu)
+        {
+            //pause menu
+        }*/
         else if (state == GameState.Battle)
         {
             battleSystem.HandleUpdate();
@@ -75,5 +90,9 @@ public class GameController : MonoBehaviour
         {
             DialogueManager.Instance.HandleUpdate();
         }
+        /*else if (state == GameState.GameOver)
+        {
+            //game over screen
+        }*/
     }
 }

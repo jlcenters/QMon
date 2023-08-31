@@ -97,10 +97,28 @@ public class Monster
     void CalculateStats()
     {
         Stats = new Dictionary<Stat, int>();
-        Stats.Add(Stat.Attack, MonBase.Attack + (1 * Level));
-        Stats.Add(Stat.Block, MonBase.Block + (1 * Level));
-        Stats.Add(Stat.Element, MonBase.Element + (1 * Level));
-        Stats.Add(Stat.Speed, MonBase.Speed + (1 * Level));
+        Stats.Add(Stat.Attack, MonBase.Attack + (2 * Level));
+        Stats.Add(Stat.Block, MonBase.Block + (2 * Level));
+        Stats.Add(Stat.Element, MonBase.Element + (2 * Level));
+        Stats.Add(Stat.Speed, MonBase.Speed + (2 * Level));
+
+        //check peak stat; edit stat accordingly
+        if (MonBase.PeakStat == Stat.Attack)
+        {
+            Stats[Stat.Attack] = MonBase.Attack + (3 * Level);
+        }
+        else if (monBase.PeakStat == Stat.Block)
+        {
+            Stats[Stat.Block] = MonBase.Block + (3 * Level);
+        }
+        else if (monBase.PeakStat == Stat.Speed)
+        {
+            Stats[Stat.Speed] = MonBase.Speed + (3 * Level);
+        }
+        else if (monBase.PeakStat == Stat.Element)
+        {
+            Stats[Stat.Element] = MonBase.Element + (3 * Level);
+        }
 
         MaxHp = MonBase.MaxHp + (2 * Level);
     }
@@ -174,27 +192,47 @@ public class Monster
     //attack/defense logic; returns data from move for UI
     public DamageDetails TakeDamage(Move move, Monster attacker)
     {
+        //higher the speed, higher the crit chance
         //62.5% chance of landing critical
         float critical = 1f;
-        if(Random.value * 100f <= 6.25)
+        if((Random.value + Speed) * 100f <= 3.5f)
         {
             critical = 2f;
+        }
+
+        //if typing is special, set to type of mon
+        var attackTyping = move.Base.Type;
+        bool isSpecial = attackTyping == MonType.Special;
+        if(isSpecial)
+        {
+            attackTyping = attacker.MonBase.Type;
         }
 
         //store info in Damage Details object to reference in Battle System
         var details = new DamageDetails()
         {
-            TypeEffectiveness = TypeChart.GetEffectiveness(move.Base.Type, this.MonBase.Type),
+            TypeEffectiveness = TypeChart.GetEffectiveness(attackTyping, this.MonBase.Type),
             Critical = critical,
             Fainted = false
         };
 
-        //if move is special, use elemental dmg and check type effectiveness
-        float attackType = (move.Base.IsElemental) ? attacker.Element * TypeChart.GetEffectiveness(move.Base.Type, this.MonBase.Type) : attacker.Attack;
-        float defenseType = (move.Base.IsElemental) ? Block : Block;
+        //if move is special, change typing of move to be attacker's; else, treat like normal move
+        float attackOrElement;
+        float defenseType;
+        if (isSpecial)
+        {
+            attackOrElement = (attacker.Element * TypeChart.GetEffectiveness(move.Base.Type, this.MonBase.Type)) +  attacker.Attack;
+            defenseType = (move.Base.IsElemental) ? Block : Block;
+        }
+        else
+        {
+            attackOrElement = (move.Base.IsElemental) ? attacker.Element * TypeChart.GetEffectiveness(attackTyping, this.MonBase.Type) : attacker.Attack;
+            defenseType = (move.Base.IsElemental) ? Block : Block;
+        }
+
 
         //adds attack to move's base damage, using level and crit success as multipliers, divide damage by defense
-        float damage = (attackType + move.Base.Power) * attacker.Level * critical / defenseType;
+        float damage = (attackOrElement + move.Base.Power) * attacker.Level * critical / defenseType;
         Hp -= (int)damage;
         if(Hp <= 0)
         {
@@ -250,6 +288,10 @@ public class Monster
     public void Heal()
     {
         Hp = MaxHp;
+        foreach(var move in Moves)
+        {
+            move.PP = move.Base.PP;
+        }
         //TODO: when incorporating health potions, add event that will update all hp ui when hp has been changed
     }
 

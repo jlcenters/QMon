@@ -28,6 +28,7 @@ public class MonsterBase : ScriptableObject
     [SerializeField] int maxHp;
     [SerializeField] int baseXp;
     [SerializeField] GrowthRate growthRate;
+    [SerializeField] Stat peakStat;
 
     [SerializeField] int attack;
     [SerializeField] int block;
@@ -51,13 +52,17 @@ public class MonsterBase : ScriptableObject
     {
         if(growthRate == GrowthRate.Fast)
         {
-            return 4 * Mathf.FloorToInt(Mathf.Pow(level, 3f)) / 7;
+            return 4 * Mathf.FloorToInt(Mathf.Pow(level, 3f)) / 5;
         }
         else if(growthRate == GrowthRate.Medium)
         {
             return Mathf.FloorToInt(Mathf.Pow(level, 3f));
         }
-        //no slow rate yet, so will return error code
+        else if(growthRate == GrowthRate.Slow)
+        {
+            return 5 * Mathf.FloorToInt(Mathf.Pow(level, 3f)) / 4;
+        }
+
         return -1;
     }
 
@@ -93,6 +98,7 @@ public class MonsterBase : ScriptableObject
         get { return baseXp; }
     }
     public GrowthRate GrowthRate => growthRate;
+    public Stat PeakStat => peakStat;
     public int Attack
     {
         get { return attack; }
@@ -158,7 +164,8 @@ public enum Stat
     Attack,
     Block,
     Element,
-    Speed
+    Speed,
+    None
 }
 
 
