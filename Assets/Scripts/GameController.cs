@@ -27,6 +27,8 @@ public class GameController : MonoBehaviour
 
     GameState state;
 
+
+
     private void Start()
     {
         playerController.OnEncounter += StartBattle;
@@ -45,6 +47,8 @@ public class GameController : MonoBehaviour
         };
     }
 
+
+
     void StartBattle()
     {
         state = GameState.Battle;
@@ -53,10 +57,31 @@ public class GameController : MonoBehaviour
 
         var playerParty = playerController.GetComponent<MonParty>();
         var qballCount = playerController.GetComponent<Inventory>().Qballs;
-        var wildMon = FindObjectOfType<MapArea>().GetComponent<MapArea>().GetRandomWildMon();
-        var copy = new Monster(wildMon.MonBase, wildMon.Level);
-        battleSystem.StartBattle(playerParty, copy, qballCount);
+
+        //run through all separate grids in map until you find the one that matches flower types with the player
+        Monster wildMon = null;
+        MapArea[] grids = FindObjectsOfType<MapArea>();
+        foreach(var grid in grids)
+        {
+            if(grid.flowerType == playerController.flowerType)
+            {
+                wildMon = grid.GetRandomWildMon();
+            }
+        }
+
+        //if no grid matched the player flower type, end method without starting battle; else, init mon and start battle
+        if(wildMon == null)
+        {
+            Debug.Log("No monster attached");
+        }
+        else
+        {
+            var copy = new Monster(wildMon.MonBase, wildMon.Level);
+            battleSystem.StartBattle(playerParty, copy, qballCount);
+        }
     }
+
+
 
     void EndBattle(bool won)
     {

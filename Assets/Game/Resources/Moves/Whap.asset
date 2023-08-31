@@ -15,6 +15,11 @@ MonoBehaviour:
   moveName: Whap
   description: 
   type: 3
-  power: 2
+  power: 3
   accuracy: 85
   pp: 20
+  effects:
+    boosts: []
+  target: 0
+  category: 0
+  priority: 0

@@ -15,6 +15,11 @@ MonoBehaviour:
   moveName: Munch
   description: Bobbol
   type: 4
-  power: 8
+  power: 10
   accuracy: 80
   pp: 15
+  effects:
+    boosts: []
+  target: 0
+  category: 0
+  priority: 0

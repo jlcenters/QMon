@@ -28,11 +28,11 @@ MonoBehaviour:
   catchRate: 255
   learnableMoves:
   - moveBase: {fileID: 11400000, guid: 0b966b11a481d3c48894631512feb7fa, type: 2}
-    level: 11
+    level: 5
   - moveBase: {fileID: 11400000, guid: 6801335ff6f930640894d2a228b8dbd5, type: 2}
     level: 5
   - moveBase: {fileID: 11400000, guid: b32aad522acf49f48a437f2a83bf1ec3, type: 2}
-    level: 11
+    level: 5
   - moveBase: {fileID: 11400000, guid: 10fe606b28793774f8b3c366cf1c06fb, type: 2}
     level: 5
   isFirst: 0

@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
 
     public event Action OnEncounter;
 
+    public FlowerType flowerType;
+
 
 
     private void Awake()

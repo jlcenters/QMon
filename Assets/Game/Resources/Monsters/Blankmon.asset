@@ -17,14 +17,26 @@ MonoBehaviour:
   type: 0
   frontSprite: {fileID: 5468388453807675316, guid: 5c17343611d5ac543b0f5eba73ddbf1a, type: 3}
   backSprite: {fileID: -6344242517381022715, guid: d21f3db226cd8b8478d34039febf60d2, type: 3}
-  maxHp: 0
-  baseXp: 0
+  maxHp: 30
+  baseXp: 80
   growthRate: 0
-  peakStat: 4
-  attack: 0
-  block: 0
-  element: 0
-  speed: 0
+  peakStat: 1
+  attack: 2
+  block: 2
+  element: 2
+  speed: 2
   catchRate: 255
-  learnableMoves: []
+  learnableMoves:
+  - moveBase: {fileID: 11400000, guid: a5f519eafc5dc0d47a0827e27cf78bd6, type: 2}
+    level: 0
+  - moveBase: {fileID: 11400000, guid: 9dc4cf299eb6a7f47833a117de5bf1d9, type: 2}
+    level: 0
+  - moveBase: {fileID: 11400000, guid: 65b7a19c36491634f816b7bffaa1c8d4, type: 2}
+    level: 3
+  - moveBase: {fileID: 11400000, guid: b096e9aa6259b2a48810b1344c00bfd8, type: 2}
+    level: 5
+  - moveBase: {fileID: 11400000, guid: dd7bd9e4fac723a408e75f264606a159, type: 2}
+    level: 8
+  - moveBase: {fileID: 11400000, guid: b4849e32a8bf5bd4da77abf4d73c5f2e, type: 2}
+    level: 10
   isFirst: 0

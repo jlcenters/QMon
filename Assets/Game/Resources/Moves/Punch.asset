@@ -15,9 +15,11 @@ MonoBehaviour:
   moveName: Punch
   description: Frootford
   type: 4
-  power: 4
+  power: 6
   accuracy: 95
   pp: 15
-  effect:
+  effects:
     boosts: []
   target: 0
+  category: 0
+  priority: 0
