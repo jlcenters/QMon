@@ -36,6 +36,19 @@ public class MonParty : MonoBehaviour
         return monsters.Where(x => x.Hp > 0).FirstOrDefault();
     }
 
+    public List<Monster> GetHealthyMons()
+    {
+        List<Monster> healthyMons = new List<Monster>();
+        //returns same type where x.hp > 0
+        foreach(Monster mon in monsters)
+        {
+            if(mon.Hp > 0)
+            {
+                healthyMons.Add(mon);
+            }
+        }
+        return healthyMons;
+    }
 
 
     public void AddMon(Monster newMon)

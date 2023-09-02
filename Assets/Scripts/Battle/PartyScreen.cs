@@ -31,8 +31,6 @@ public class PartyScreen : MonoBehaviour
                 members[i].gameObject.SetActive(false);
             }
         }
-
-        messageTxt.text = "Choose a Monster.";
     }
 
     public void UpdateMonsterSelection(int selectedMon)

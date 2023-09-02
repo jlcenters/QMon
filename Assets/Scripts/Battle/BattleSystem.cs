@@ -118,6 +118,7 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.PartyScreen;
 
         partyScreen.SetPartyData(playerParty.Monsters);
+        partyScreen.SetMessageText("Choose a monster");
         partyScreen.gameObject.SetActive(true);
     }
 

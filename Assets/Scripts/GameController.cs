@@ -6,33 +6,40 @@ using UnityEngine;
 
 public enum GameState
 {
-    FreeRoam,
     MainMenu,
+    FreeRoam,
     PauseMenu,
     Battle,
     Dialogue,
-    GameOver
+    GameOverMenu,
 }
 
 
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] GameObject mainMenu;
+    [SerializeField] MainMenu mainMenu;
     [SerializeField] PlayerController playerController;
-    [SerializeField] GameObject pauseMenu;
+    [SerializeField] PauseMenu pauseMenu;
     [SerializeField] BattleSystem battleSystem;
     [SerializeField] Camera mainCamera;
-    [SerializeField] GameObject gameOverScreen;
+    [SerializeField] GameOverMenu gameOverMenu;
 
     GameState state;
 
 
 
+    //set up events
     private void Start()
     {
+        Debug.Log("Note: currently cannot restart game upon game over");
+
         playerController.OnEncounter += StartBattle;
         battleSystem.OnBattleOver += EndBattle;
+        mainMenu.OnStartGame += StartGame;
+        playerController.OnPause += PauseGame;
+        pauseMenu.OnResume += ResumeGame;
+        gameOverMenu.OnRestartGame += Retry;
 
         DialogueManager.Instance.OnShowDialogue += () =>
         {
@@ -45,6 +52,40 @@ public class GameController : MonoBehaviour
                 state = GameState.FreeRoam;
             }
         };
+    }
+
+
+
+    void StartGame()
+    {
+        state = GameState.FreeRoam;
+        mainMenu.gameObject.SetActive(false);
+        mainCamera.gameObject.SetActive(true);
+    }
+
+
+
+    void PauseGame()
+    {
+        state = GameState.PauseMenu;
+        pauseMenu.gameObject.SetActive(true);
+    }
+
+
+    void ResumeGame()
+    {
+        state = GameState.FreeRoam;
+        pauseMenu.gameObject.SetActive(false);
+        mainCamera.gameObject.SetActive(true);
+    }
+
+
+
+    void Retry()
+    {
+        state = GameState.FreeRoam;
+        gameOverMenu.gameObject.SetActive(false);
+        mainCamera.gameObject.SetActive(true);
     }
 
 
@@ -85,28 +126,38 @@ public class GameController : MonoBehaviour
 
     void EndBattle(bool won)
     {
-        playerController.GetComponent<Inventory>().Qballs = battleSystem.QballCount;
-        state = GameState.FreeRoam;
-        battleSystem.gameObject.SetActive(false);
-        mainCamera.gameObject.SetActive(true);
+        if (won)
+        {
+            playerController.GetComponent<Inventory>().Qballs = battleSystem.QballCount;
+            state = GameState.FreeRoam;
+            battleSystem.gameObject.SetActive(false);
+            mainCamera.gameObject.SetActive(true);
+        }
+        else
+        {
+            state = GameState.GameOverMenu;
+            battleSystem.gameObject.SetActive(false);
+            gameOverMenu.gameObject.SetActive(true);
+        }
+
     }
 
 
     
     private void Update()
     {
-        /*if (state == GameState.MainMenu)
+        if (state == GameState.MainMenu)
         {
-            //main menu
-        }*/
-        if (state == GameState.FreeRoam)
+            mainMenu.HandleUpdate();
+        }
+        else if (state == GameState.FreeRoam)
         {
             playerController.HandleUpdate();
         }
-        /*else if (state == GameState.PauseMenu)
+        else if (state == GameState.PauseMenu)
         {
-            //pause menu
-        }*/
+            pauseMenu.HandleUpdate();
+        }
         else if (state == GameState.Battle)
         {
             battleSystem.HandleUpdate();
@@ -115,9 +166,9 @@ public class GameController : MonoBehaviour
         {
             DialogueManager.Instance.HandleUpdate();
         }
-        /*else if (state == GameState.GameOver)
+        else if (state == GameState.GameOverMenu)
         {
-            //game over screen
-        }*/
+            gameOverMenu.HandleUpdate();
+        }
     }
 }

@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     Animator ani;
 
     public event Action OnEncounter;
+    public event Action OnPause;
 
     public FlowerType flowerType;
 
@@ -67,6 +68,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Interact();
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            isMoving = false;
+            ani.SetBool("isMoving", isMoving);
+            OnPause();
         }
 
     }
