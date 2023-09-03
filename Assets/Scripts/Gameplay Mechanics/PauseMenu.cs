@@ -26,6 +26,8 @@ public class PauseMenu : MonoBehaviour
 
 
     int currentMenuSelection;
+    int firstMonSelection;
+    int secondMonSelection;
     public Color highlightColor;
 
     PauseState state;
@@ -66,6 +68,14 @@ public class PauseMenu : MonoBehaviour
         else if(state == PauseState.Party)
         {
             HandlePartyMenu();
+        }
+        else if(state == PauseState.Swap)
+        {
+            HandleSwap();
+        }
+        else if(state == PauseState.Release)
+        {
+            HandleRelease();
         }
     }
 
@@ -111,11 +121,12 @@ public class PauseMenu : MonoBehaviour
                 //cannot swap if less than 2 healthy mons available; else swap
                 if(playerParty.GetHealthyMons().Count < 2)
                 {
-                    partyScreen.SetMessageText("You need at least two mons to swap.");
+                    partyScreen.SetMessageText("You need at least two healthy mons to swap.");
                 }
                 else
                 {
-                    HandleSwap();
+                    partyScreen.SetMessageText("Choose which mons to swap.");
+                    state = PauseState.Swap;
                 }
             }
             else if (currentMenuSelection == 1)
@@ -123,12 +134,12 @@ public class PauseMenu : MonoBehaviour
                 //cannot release if less than 2 healthy mons available; else check for release
                 if(playerParty.GetHealthyMons().Count < 2)
                 {
-                    partyScreen.SetMessageText("You need at least one mon in your party.");
+                    partyScreen.SetMessageText("You need at least one healthy mon in your party at all times.");
                 }
                 else
                 {
-                    currentMenuSelection = 0;
-                    HandleRelease();
+                    partyScreen.SetMessageText("Choose which mon to release.");
+                    state = PauseState.Release;
                 }
 
             }
@@ -147,22 +158,144 @@ public class PauseMenu : MonoBehaviour
 
     void HandleSwap()
     {
+        //HandlePartyScreen(firstMonSelection);
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (firstMonSelection < playerParty.Monsters.Count - 1)
+            {
+                firstMonSelection++;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            if (firstMonSelection > 0)
+            {
+                firstMonSelection--;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (firstMonSelection < playerParty.Monsters.Count - 2)
+            {
+                firstMonSelection += 2;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (firstMonSelection > 2)
+            {
+                firstMonSelection -= 2;
+            }
+        }
+        //will check to make sure selection is within range, else it will add/subtract accordingly
+        //firstMonSelection = Mathf.Clamp(firstMonSelection, 0, playerParty.Monsters.Count - 1);
+
+        partyScreen.UpdateMonsterSelection(firstMonSelection);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("first selected");
+            Debug.Log($"first index: {firstMonSelection}");
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                if (secondMonSelection < playerParty.Monsters.Count - 1)
+                {
+                    secondMonSelection++;
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                if (secondMonSelection > 0)
+                {
+                    secondMonSelection--;
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                if (secondMonSelection < playerParty.Monsters.Count - 2)
+                {
+                    secondMonSelection += 2;
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                if (secondMonSelection > 2)
+                {
+                    secondMonSelection -= 2;
+                }
+            }
+
+            HandlePartyScreen(secondMonSelection);
+
+            if (Input.GetKeyDown(KeyCode.Space) && firstMonSelection != secondMonSelection)
+            {
+                Debug.Log("second selected");
+                Debug.Log($"second index: {secondMonSelection}");
+
+
+                playerParty.SwapMons(playerParty.Monsters[firstMonSelection], firstMonSelection, playerParty.Monsters[secondMonSelection], secondMonSelection);
+                partyScreen.SetPartyData(playerParty.Monsters);
+                firstMonSelection = 0;
+                secondMonSelection = 0;
+                partyScreen.SetMessageText("Mons swapped.");
+                //yield return new WaitForSeconds(0.5f);
+                state = PauseState.Party;
+            }
+        }
+
         //select first mon
         //select second mon
         //swap
         //send message
-        Debug.Log("swapping");
     }
 
 
 
     void HandleRelease()
     {
-        //select mon
+        partyScreen.SetMessageText("Choose a mon to release.");
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (firstMonSelection < playerParty.Monsters.Count - 1)
+            {
+                firstMonSelection++;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            if (firstMonSelection > 0)
+            {
+                firstMonSelection--;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (firstMonSelection < playerParty.Monsters.Count - 2)
+            {
+                firstMonSelection += 2;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (firstMonSelection > 2)
+            {
+                firstMonSelection -= 2;
+            }
+        }
+        HandlePartyScreen(firstMonSelection);
         //check confirm
         //release
-        //send message and return to main state
-        Debug.Log("releasing");
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            firstMonSelection = 0;
+            playerParty.RemoveMon(playerParty.Monsters[firstMonSelection]);
+            partyScreen.SetPartyData(playerParty.Monsters);
+            HighlightSelection(partyMenuOptions);
+            partyScreen.SetMessageText($"Goodbye, {playerParty.Monsters[firstMonSelection].MonBase.MonName}!");
+            state = PauseState.Party;
+            Debug.Log("releasing");
+        }
+
     }
 
 
@@ -175,6 +308,7 @@ public class PauseMenu : MonoBehaviour
             if (currentMenuSelection > 0)
             {
                 currentMenuSelection--;
+
             }
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -182,11 +316,64 @@ public class PauseMenu : MonoBehaviour
             if (currentMenuSelection < menu.Count - 1)
             {
                 currentMenuSelection++;
+
             }
         }
 
         //highlight selection
         HighlightSelection(menu);
+    }
+
+
+
+    void HandlePartyScreen(int currentPartyMember)
+    {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (currentPartyMember < playerParty.Monsters.Count - 1)
+            {
+                currentPartyMember++;
+                Debug.Log("moved right");
+
+            }
+            Debug.Log("cant move");
+            Debug.Log($"{currentPartyMember}");
+            Debug.Log($"{firstMonSelection}");
+
+
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            if(currentPartyMember > 0)
+            {
+                currentPartyMember--;
+                Debug.Log("moved left");
+
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if(currentPartyMember < playerParty.Monsters.Count - 2)
+            {
+                currentPartyMember += 2;
+                Debug.Log("moved down");
+
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if(currentPartyMember > 2)
+            {
+                currentPartyMember -= 2;
+                Debug.Log("moved up");
+
+
+            }
+        }
+        //will check to make sure selection is within range, else it will add/subtract accordingly
+        currentPartyMember = Mathf.Clamp(currentPartyMember, 0, playerParty.Monsters.Count - 1);
+
+        partyScreen.UpdateMonsterSelection(currentPartyMember);
     }
 
 

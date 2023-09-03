@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Not yet implemented.
   type: 0
   frontSprite: {fileID: 369393950089536105, guid: d141493d3dbf8e44981ead3a6cb62d53, type: 3}
-  backSprite: {fileID: -6344242517381022715, guid: d21f3db226cd8b8478d34039febf60d2, type: 3}
+  backSprite: {fileID: 21300000, guid: bd30c314befcc0d47a33230741c5e93d, type: 3}
   maxHp: 100
   baseXp: 0
   growthRate: 0

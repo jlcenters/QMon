@@ -36,6 +36,8 @@ public class MonParty : MonoBehaviour
         return monsters.Where(x => x.Hp > 0).FirstOrDefault();
     }
 
+
+
     public List<Monster> GetHealthyMons()
     {
         List<Monster> healthyMons = new List<Monster>();
@@ -51,6 +53,7 @@ public class MonParty : MonoBehaviour
     }
 
 
+
     public void AddMon(Monster newMon)
     {
         if(monsters.Count < 6)
@@ -61,5 +64,40 @@ public class MonParty : MonoBehaviour
         {
             //transfer to pc
         }
+    }
+
+
+
+    public void RemoveMon(Monster selectedMon)
+    {
+        monsters.Remove(selectedMon);
+    }
+
+
+
+    public void SwapMons(Monster firstSwap, int firstIndex, Monster secondSwap, int secondIndex)
+    {
+        List<Monster> newMons = new List<Monster>();
+
+        for (int i = 0; i < monsters.Count; i++)
+        {
+            if (i == firstIndex || i == secondIndex)
+            {
+                if (i == firstIndex)
+                {
+                    newMons.Add(secondSwap);
+                }
+                else
+                {
+                    newMons.Add(firstSwap);
+                }
+            }
+            else
+            {
+                newMons.Add(monsters[i]);
+            }
+        }
+
+        monsters = newMons;
     }
 }

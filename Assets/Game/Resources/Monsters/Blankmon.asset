@@ -15,8 +15,8 @@ MonoBehaviour:
   monName: Blankmon
   description: Tutorial monster.
   type: 0
-  frontSprite: {fileID: 5468388453807675316, guid: 5c17343611d5ac543b0f5eba73ddbf1a, type: 3}
-  backSprite: {fileID: -6344242517381022715, guid: d21f3db226cd8b8478d34039febf60d2, type: 3}
+  frontSprite: {fileID: -1737588125297026405, guid: ff60c3bcbdeb0444b9b4399fe6c9b812, type: 3}
+  backSprite: {fileID: 4061600300757906213, guid: ff60c3bcbdeb0444b9b4399fe6c9b812, type: 3}
   maxHp: 30
   baseXp: 80
   growthRate: 0
