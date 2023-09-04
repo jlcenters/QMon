@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     public event Action OnPause;
 
     public FlowerType flowerType;
-
+    public PlayerSurpriseEffect surpriseEffect;
 
 
     private void Awake()
@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviour
         {
             Interact();
         }
+        //if p button is pressed, pause game
         if (Input.GetKeyDown(KeyCode.P))
         {
             isMoving = false;
@@ -126,8 +127,10 @@ public class PlayerController : MonoBehaviour
     {
         if(Physics2D.OverlapCircle(transform.position, 0.2f, longGrassLayer))
         {
-            if(UnityEngine.Random.Range(1, 101) <= 10){
+            if (UnityEngine.Random.Range(1, 101) <= 10){
                 isMoving = false;
+                //yield return surpriseEffect.EncounterEffect();
+
                 //will utilize the observer design pattern to avoid a circular dependency
                 //create event in player controller
                 //game controller will subscribe
@@ -151,4 +154,5 @@ public class PlayerController : MonoBehaviour
         transform.Translate((speed * 1.5f) * Time.deltaTime * userInput);
 
     }*/
+
 }

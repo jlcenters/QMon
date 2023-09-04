@@ -8,11 +8,16 @@ public enum FlowerType
 {
     None,
     Fire,
+    FireHard,
     Water,
+    WaterHard,
     Grass,
+    GrassHard,
     Normal,
     Ghost,
-    Special
+    GhostHard,
+    Special,
+    Boss
 }
 
 
@@ -20,15 +25,9 @@ public enum FlowerType
 public class MapArea : MonoBehaviour
 {
     [SerializeField] List<Monster> wildMons;
-    [SerializeField] BoxCollider2D bc;
 
     public FlowerType flowerType;
 
-
-    private void Awake()
-    {
-        bc = GetComponent<BoxCollider2D>();
-    }
 
     //TODO: find based on rarity instead of completely random
     public Monster GetRandomWildMon()

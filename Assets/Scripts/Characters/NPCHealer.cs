@@ -14,11 +14,11 @@ public class NPCHealer : MonoBehaviour
 
         //get reference to mon party and fade in
         var playerParty = player.GetComponent<MonParty>();
-        yield return Fader.instance.FadeIn();
+        //yield return Fader.instance.FadeIn();
 
         //heal all mon and fade out
         playerParty.Monsters.ForEach(m => m.Heal());
-        yield return Fader.instance.FadeOut();
+        //yield return Fader.instance.FadeOut();
 
         //TODO: when incorporating health potions, add hp ui fixing event which will update the ui of mons
     }

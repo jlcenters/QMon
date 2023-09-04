@@ -9,7 +9,8 @@ public enum PauseState
     Main,
     Party,
     Swap,
-    Release
+    Release,
+    ConfirmQuit
 }
 
 
@@ -23,6 +24,9 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject partyMenu;
     [SerializeField] PartyScreen partyScreen;
     [SerializeField] MonParty playerParty;
+
+    [SerializeField] List<TextMeshProUGUI> confirmQuitMenuOptions;
+    [SerializeField] GameObject confirmQuitMenu;
 
 
     int currentMenuSelection;
@@ -45,8 +49,10 @@ public class PauseMenu : MonoBehaviour
     void SetUpPauseMenu()
     {
         partyMenu.SetActive(false);
+        confirmQuitMenu.SetActive(false);
         pauseMenu.SetActive(true);
     }
+
 
 
     void SetUpPartyMenu()
@@ -55,6 +61,15 @@ public class PauseMenu : MonoBehaviour
         partyScreen.SetMessageText("What would you like to do?");
         pauseMenu.SetActive(false);
         partyMenu.SetActive(true);
+    }
+
+
+
+    void SetUpConfirmQuitMenu()
+    {
+        partyMenu.SetActive(false);
+        pauseMenu.SetActive(false);
+        confirmQuitMenu.SetActive(true);
     }
 
 
@@ -76,6 +91,10 @@ public class PauseMenu : MonoBehaviour
         else if(state == PauseState.Release)
         {
             HandleRelease();
+        }
+        else if(state == PauseState.ConfirmQuit)
+        {
+            HandleConfirmQuit();
         }
     }
 
@@ -102,7 +121,8 @@ public class PauseMenu : MonoBehaviour
             {
                 //quit
                 currentMenuSelection = 0;
-                Debug.Log("goodbye");
+                SetUpConfirmQuitMenu();
+                state = PauseState.ConfirmQuit;
 
             }
         }
@@ -374,6 +394,48 @@ public class PauseMenu : MonoBehaviour
         currentPartyMember = Mathf.Clamp(currentPartyMember, 0, playerParty.Monsters.Count - 1);
 
         partyScreen.UpdateMonsterSelection(currentPartyMember);
+    }
+
+
+
+    void HandleConfirmQuit()
+    {
+        //check which menu item the player selected
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            if (currentMenuSelection > 0)
+            {
+                currentMenuSelection--;
+
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (currentMenuSelection < confirmQuitMenuOptions.Count - 1)
+            {
+                currentMenuSelection++;
+
+            }
+        }
+
+        //highlight selection
+        HighlightSelection(confirmQuitMenuOptions);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if(currentMenuSelection == 0)
+            {
+                //cancel
+                SetUpPauseMenu();
+                state = PauseState.Main;
+            }
+            else if (currentMenuSelection == 1)
+            {
+                currentMenuSelection = 0;
+                Debug.Log("goodbye");
+                Application.Quit();
+            }
+        }
     }
 
 

@@ -126,6 +126,7 @@ public class GameController : MonoBehaviour
 
     void EndBattle(bool won)
     {
+        playerController.surpriseEffect.RemoveEffect();
         if (won)
         {
             playerController.GetComponent<Inventory>().Qballs = battleSystem.QballCount;

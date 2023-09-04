@@ -681,10 +681,18 @@ public class BattleSystem : MonoBehaviour
             {
                 if (currentAction == 2)
                 {
-                    //bag
+                    //catch
                     if(QballCount > 0)
                     {
-                        StartCoroutine(RunTurns(BattleAction.UseItem));
+                        if(playerParty.Monsters.Count >= 6)
+                        {
+                            StartCoroutine(dialogueBox.TypeDialogue("Your MonStash is full!"));
+
+                        }
+                        else
+                        {
+                            StartCoroutine(RunTurns(BattleAction.UseItem));
+                        }
                     }
                     else
                     {
