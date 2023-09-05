@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Headbutt
   description: Scooter
   type: 4
-  power: 8
-  accuracy: 70
+  power: 17
+  accuracy: 85
   pp: 10
   effects:
     boosts: []

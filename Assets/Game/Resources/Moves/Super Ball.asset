@@ -15,7 +15,7 @@ MonoBehaviour:
   moveName: Super Ball
   description: Type changes depending on mon's element.
   type: 6
-  power: 30
+  power: 45
   accuracy: 100
   pp: 5
   effects:

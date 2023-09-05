@@ -62,7 +62,7 @@ public class BattleSprite : MonoBehaviour
             transform.localScale = new Vector3(enemonSpriteScale, enemonSpriteScale);
         }
 
-        hud.SetData(mon);
+        hud.SetData(Mon);
 
         img.color = originalColor;
         EnterAnimation();

@@ -93,10 +93,13 @@ public class Monster
         Hp = MaxHp;
         ResetStatBoost();
         StatusChanges = new Queue<string>();
+        Debug.Log($"{ MonBase.MonName} STATS:");
+        Debug.Log($"current hp: {MaxHp}; current attack: {Attack}; current block: {Block}; current element: {Element}; current speed: {Speed}");
+
     }
 
     //Initializing stats referencing the base
-    void CalculateStats()
+    public void CalculateStats()
     {
         Stats = new Dictionary<Stat, int>();
         Stats.Add(Stat.Attack, MonBase.Attack + (2 * Level));
@@ -268,6 +271,7 @@ public class Monster
         if(Xp > monBase.GetXpForLevel(Level + 1))
         {
             level++;
+            Heal();
             return true;
         }
 

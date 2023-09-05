@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56f90ebdbf5608c42b115face2233a4a, type: 3}
+  m_Name: Wink
+  m_EditorClassIdentifier: 
+  monName: Wink
+  description: Boo!
+  type: 5
+  frontSprite: {fileID: 2827568677790843620, guid: 4cc1315fa510a7e4099836c81e5f5f0f, type: 3}
+  backSprite: {fileID: -5801926200534030224, guid: 6e712140aed5e3d4da944a3f31d3f14e, type: 3}
+  maxHp: 60
+  baseXp: 650
+  growthRate: 2
+  peakStat: 2
+  attack: 4
+  block: 4
+  element: 5
+  speed: 4
+  catchRate: 255
+  learnableMoves:
+  - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
+    level: 0
+  isBoss: 0
+  isGhost: 1

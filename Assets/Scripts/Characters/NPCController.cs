@@ -47,13 +47,13 @@ public class NPCController : MonoBehaviour, Interactable
                 {
                     StartCoroutine(narrator.DefeatedBossDialogue());
                 }
-                else if (player.GetComponent<PlayerController>().bossDefeated)
+                else if (player.GetComponent<PlayerController>().bossCaught)
                 {
                     StartCoroutine(narrator.CaughtBossDialogue());
                 }
                 else
                 {
-                StartCoroutine(DialogueManager.Instance.ShowDialogue(dialogue));
+                    StartCoroutine(DialogueManager.Instance.ShowDialogue(dialogue));
                 }
             }
             else if (healer != null)

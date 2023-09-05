@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Bounce
   description: 
   type: 0
-  power: 3
-  accuracy: 80
+  power: 6
+  accuracy: 85
   pp: 20
   effects:
     boosts: []

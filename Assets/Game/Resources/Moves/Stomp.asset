@@ -15,7 +15,7 @@ MonoBehaviour:
   moveName: Stomp
   description: Crushing opponent
   type: 4
-  power: 12
+  power: 10
   accuracy: 90
   pp: 10
   effects:

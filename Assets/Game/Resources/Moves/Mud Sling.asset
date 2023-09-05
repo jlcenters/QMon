@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Mud Sling
   description: Sling a ball of mud at the opponent
   type: 4
-  power: 6
-  accuracy: 65
+  power: 9
+  accuracy: 75
   pp: 10
   effects:
     boosts: []

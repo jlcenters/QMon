@@ -15,7 +15,7 @@ MonoBehaviour:
   moveName: Strike
   description: 
   type: 4
-  power: 2
+  power: 3
   accuracy: 90
   pp: 20
   effects:

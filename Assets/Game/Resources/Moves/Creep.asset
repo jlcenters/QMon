@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Does nothing.
   type: 4
   power: 0
-  accuracy: 100
+  accuracy: 0
   pp: 20
   effects:
     boosts: []

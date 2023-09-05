@@ -29,6 +29,9 @@ public class GameController : MonoBehaviour
     [SerializeField] GameOverMenu winGameMenu;
     [SerializeField] GameObject bossFlowers;
 
+    public Gravestone gravestone;
+    [SerializeField] GameObject graveObject;
+
     GameState state;
     bool win;
 
@@ -45,7 +48,8 @@ public class GameController : MonoBehaviour
         playerController.OnPause += PauseGame;
         pauseMenu.OnResume += ResumeGame;
         narrator.OnWinGame += WinGame;
-        
+        //Gravestone.Instance.OnSpawn += StartGhostBattle;
+
         //gameOverMenu.OnRestartGame += Retry;
 
         DialogueManager.Instance.OnShowDialogue += () =>
@@ -70,14 +74,11 @@ public class GameController : MonoBehaviour
         mainCamera.gameObject.SetActive(true);
     }
 
-
-
     void PauseGame()
     {
         state = GameState.PauseMenu;
         pauseMenu.gameObject.SetActive(true);
     }
-
 
     void ResumeGame()
     {
@@ -86,8 +87,6 @@ public class GameController : MonoBehaviour
         mainCamera.gameObject.SetActive(true);
     }
 
-
-
     void Retry()
     {
         state = GameState.FreeRoam;
@@ -95,16 +94,10 @@ public class GameController : MonoBehaviour
         mainCamera.gameObject.SetActive(true);
     }
 
-
-
     void WinGame()
     {
         win = true;
-        state = GameState.GameOverMenu;
-        winGameMenu.gameObject.SetActive(true);
     }
-
-
 
     void StartBattle()
     {
@@ -117,14 +110,10 @@ public class GameController : MonoBehaviour
         MapArea[] grids = FindObjectsOfType<MapArea>();
         foreach (var grid in grids)
         {
-            if(grid.flowerType == playerController.flowerType)
+            //run through all separate grids in map until you find the one that matches flower types with the player
+            if (grid.flowerType == playerController.flowerType)
             {
-                //run through all separate grids in map until you find the one that matches flower types with the player
                 wildMon = grid.GetRandomWildMon();
-
-
-
-
             }
         }
 
@@ -133,7 +122,7 @@ public class GameController : MonoBehaviour
         //if no grid matched the player flower type, end method without starting battle; else, init mon and start battle
         if (wildMon == null)
         {
-                Debug.Log("No monster attached");
+            Debug.Log("no mon");
          }
         else
         {
@@ -146,7 +135,13 @@ public class GameController : MonoBehaviour
 
     }
 
+    public void StartGhostBattle(GameObject graveObject)
+    {
+        this.graveObject = graveObject;
 
+        StartBattle();
+
+    }
 
     void EndBattle(bool won)
     {
@@ -170,6 +165,15 @@ public class GameController : MonoBehaviour
                 }
 
             }
+            else if(gravestone != null)
+            {
+                if (battleSystem.defeatedGhost)
+                {
+                    graveObject.SetActive(false);
+                }
+                gravestone = null;
+            }
+
 
             playerController.GetComponent<Inventory>().Qballs = battleSystem.QballCount;
             state = GameState.FreeRoam;
@@ -195,7 +199,16 @@ public class GameController : MonoBehaviour
         }
         else if (state == GameState.FreeRoam)
         {
-            playerController.HandleUpdate();
+            if (win)
+            {
+                winGameMenu.gameObject.SetActive(true);
+                winGameMenu.HandleUpdate();
+            }
+            else 
+            {
+                playerController.HandleUpdate();
+
+            }
         }
         else if (state == GameState.PauseMenu)
         {
@@ -211,14 +224,7 @@ public class GameController : MonoBehaviour
         }
         else if (state == GameState.GameOverMenu)
         {
-            if (win)
-            {
-                winGameMenu.HandleUpdate();
-            }
-            else
-            {
-                gameOverMenu.HandleUpdate();
-            }
+            gameOverMenu.HandleUpdate();
         }
     }
 }

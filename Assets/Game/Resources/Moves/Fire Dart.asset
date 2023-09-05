@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Fire Dart
   description: 
   type: 1
-  power: 9
-  accuracy: 70
+  power: 20
+  accuracy: 80
   pp: 10
   effects:
     boosts: []

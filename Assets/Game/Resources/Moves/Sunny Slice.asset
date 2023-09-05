@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Sunny Slice
   description: 
   type: 3
-  power: 7
-  accuracy: 90
+  power: 15
+  accuracy: 100
   pp: 10
   effects:
     boosts: []

@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Eye Laser
   description: evil energy blast from the eyes
   type: 6
-  power: 20
-  accuracy: 90
+  power: 7
+  accuracy: 100
   pp: 5
   effects:
     boosts: []

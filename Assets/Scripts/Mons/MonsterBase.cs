@@ -45,8 +45,9 @@ public class MonsterBase : ScriptableObject
 
     public static int maxMoves = 4;
 
-    //check if boss mon
+    //check if boss or ghost mon
     [SerializeField] bool isBoss;
+    [SerializeField] bool isGhost;
 
 
 
@@ -125,6 +126,7 @@ public class MonsterBase : ScriptableObject
         get { return learnableMoves; }
     }
     public bool IsBoss { get { return isBoss; } }
+    public bool IsGhost { get { return isGhost; } }
 }
 
 
@@ -184,8 +186,8 @@ public class TypeChart
         new float[] {2f, 1f, .5f, 1f, 1f, 1f}, //WATER
         new float[] {.5f, 2f, 1f, 1f, 1f, 1f}, //GRASS
         new float[] {1f, 1f, 1f, 1f, 1f, 1f}, //NORMAL
-        new float[] {1f, 1f, 1f, 1f, 1f, 1f}, //GHOST
-        new float[] {1f, 1f, 1f, 1f, 1f, 1f } //SPECIAL
+        new float[] {1f, 1f, 1f, 1f, .5f, 2f}, //GHOST
+        new float[] {1f, 1f, 1f, 1f, .5f, 2f } //SPECIAL
 
         //KEY: 1- normal effectiveness, .5- not very effective, 2- super effective, 0- no effect
     };

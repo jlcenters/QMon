@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Burn
   description: 
   type: 1
-  power: 4
-  accuracy: 75
+  power: 9
+  accuracy: 80
   pp: 20
   effects:
     boosts: []

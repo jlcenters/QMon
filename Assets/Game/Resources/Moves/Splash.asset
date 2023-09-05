@@ -15,8 +15,8 @@ MonoBehaviour:
   moveName: Splash
   description: 
   type: 2
-  power: 2
-  accuracy: 90
+  power: 5
+  accuracy: 100
   pp: 20
   effects:
     boosts: []

@@ -64,6 +64,10 @@ public class BattleSystem : MonoBehaviour
     public bool defeatedBoss;
     public bool caughtBoss;
 
+    //ghost encounter checks
+    public bool ghostBattle;
+    public bool defeatedGhost;
+
     //event to determine whether or not player won battle
     public event Action<bool> OnBattleOver;
 
@@ -303,6 +307,10 @@ public class BattleSystem : MonoBehaviour
             {
                 caughtBoss = true;
             }
+            else if (enemySprite.Mon.MonBase.IsGhost)
+            {
+                defeatedGhost = true;
+            }
 
             playerParty.AddMon(enemySprite.Mon);
             yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} has been added to your party.");
@@ -502,6 +510,10 @@ public class BattleSystem : MonoBehaviour
             {
                 defeatedBoss = true;
             }
+            else if (enemySprite.Mon.MonBase.IsGhost)
+            {
+                defeatedGhost = true;
+            }
             BattleOver(true);
         }
     }
@@ -573,7 +585,10 @@ public class BattleSystem : MonoBehaviour
             while(playerSprite.Mon.LeveledUp())
             {
                 //level up!
+                playerSprite.Mon.CalculateStats();
                 playerSprite.Hud.SetLevel();
+                playerSprite.Mon.Hp = playerSprite.Mon.MaxHp;
+                playerSprite.Hud.SetHP();
                 yield return dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} is now level {playerSprite.Mon.Level}!");
 
                 //if there is a move to learn this level, begin attempt to learn move
