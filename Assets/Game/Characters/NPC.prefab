@@ -144,5 +144,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa70cd5a2ea9dc548a2ec8a5da245f21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstInteraction: 1
+  initialDialogue:
+    lines: []
   dialogue:
     lines: []
+  player: {fileID: 0}

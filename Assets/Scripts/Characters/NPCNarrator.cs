@@ -1,18 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class NPCNarrator : MonoBehaviour
 {
-    public bool firstInteraction;
-    [SerializeField] Dialogue initialDialogue;
     [SerializeField] Dialogue defeatedBossDialogue;
     [SerializeField] Dialogue caughtBossDialogue;
 
-    public IEnumerator InitialDialogue()
-    {
-        yield return DialogueManager.Instance.ShowDialogue(initialDialogue);
-    }
+    public event Action OnWinGame;
 
     public IEnumerator NormalDialogue(Dialogue midGameDialogue)
     {
@@ -22,10 +18,12 @@ public class NPCNarrator : MonoBehaviour
     public IEnumerator DefeatedBossDialogue()
     {
         yield return DialogueManager.Instance.ShowDialogue(defeatedBossDialogue);
+        OnWinGame();
     }
 
     public IEnumerator CaughtBossDialogue()
     {
         yield return DialogueManager.Instance.ShowDialogue(caughtBossDialogue);
+        OnWinGame();
     }
 }

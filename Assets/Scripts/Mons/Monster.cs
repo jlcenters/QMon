@@ -18,6 +18,8 @@ public class Monster
         } 
     }
 
+
+
     //Constructor
     public Monster(MonsterBase _base, int lvl)
     {
@@ -192,10 +194,11 @@ public class Monster
     //attack/defense logic; returns data from move for UI
     public DamageDetails TakeDamage(Move move, Monster attacker)
     {
-        //higher the speed, higher the crit chance
+        //TODO: higher the speed, higher the crit chance
+
         //62.5% chance of landing critical
         float critical = 1f;
-        if((Random.value + Speed) * 100f <= 3.5f)
+        if(Random.value * 100f <= 3.5f)
         {
             critical = 2f;
         }

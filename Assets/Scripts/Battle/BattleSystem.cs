@@ -59,6 +59,11 @@ public class BattleSystem : MonoBehaviour
     //move forgetting menu
     [SerializeField] MoveSelectionUI moveSelectUI;
 
+    //boss encounter checks
+    public bool bossBattle;
+    public bool defeatedBoss;
+    public bool caughtBoss;
+
     //event to determine whether or not player won battle
     public event Action<bool> OnBattleOver;
 
@@ -69,6 +74,7 @@ public class BattleSystem : MonoBehaviour
     MoveBase moveToLearn;
 
 
+
     //Setup
     public void StartBattle(MonParty party, Monster encounter, int qballAmount)
      {
@@ -76,6 +82,9 @@ public class BattleSystem : MonoBehaviour
         wildMon = encounter;
         QballCount = qballAmount;
         escapeAttempts = 0;
+        bossBattle = encounter.MonBase.IsBoss;
+        caughtBoss = false;
+        defeatedBoss = false;
         StartCoroutine(SetUpBattle());
     }
 
@@ -290,6 +299,11 @@ public class BattleSystem : MonoBehaviour
             yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} was caught!");
             yield return catchObjSprite.DOFade(0f, 1.5f).WaitForCompletion();
 
+            if (enemySprite.Mon.MonBase.IsBoss)
+            {
+                caughtBoss = true;
+            }
+
             playerParty.AddMon(enemySprite.Mon);
             yield return dialogueBox.TypeDialogue($"{enemySprite.Mon.MonBase.MonName} has been added to your party.");
 
@@ -351,15 +365,15 @@ public class BattleSystem : MonoBehaviour
         state = BattleState.Busy;
 
         escapeAttempts++;
-        //int playerSpeed = playerSprite.Mon.Speed;
-        //int enemySpeed = enemySprite.Mon.Speed;
+        int playerSpeed = playerSprite.Mon.Speed;
+        int enemySpeed = enemySprite.Mon.Speed;
         dialogueBox.EnableActionSelector(false, QballCount);
         yield return dialogueBox.TypeDialogue("Got away safely!");
         BattleOver(true);
 
         
 
-        /*if (enemySpeed < playerSpeed)
+        if (enemySpeed < playerSpeed)
         {
             dialogueBox.EnableActionSelector(false, QballCount);
             yield return dialogueBox.TypeDialogue("Got away safely!");
@@ -381,7 +395,7 @@ public class BattleSystem : MonoBehaviour
                 state = BattleState.RunningTurn;
             }
         }
-        yield return null;*/
+        yield return null;
     }
 
     IEnumerator ForgetAMove(Monster mon, MoveBase newMove)
@@ -403,6 +417,7 @@ public class BattleSystem : MonoBehaviour
     {
         //Run dialogue and animations, and reduce PP
         yield return dialogueBox.TypeDialogue($"{srcSprite.Mon.MonBase.MonName} used {move.Base.MoveName}.");
+        move.PP--;
 
         //if rng returns unit greater than accuracy value, send fail message and begin next sequence
         if (UnityEngine.Random.Range(0, 101) > move.Base.Accuracy)
@@ -412,10 +427,7 @@ public class BattleSystem : MonoBehaviour
             yield break;
         }
 
-        move.PP--;
         srcSprite.AttackAnimation();
-        yield return new WaitForSeconds(0.5f);
-        targetSprite.DamageAnimation();
 
         //if move is a status effect, run effects ienumerator; else, attack
         if(move.Base.Category == MoveCategory.Status)
@@ -424,6 +436,9 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
+            yield return new WaitForSeconds(0.5f);
+            targetSprite.DamageAnimation();
+
             var targetDamage = targetSprite.Mon.TakeDamage(move, srcSprite.Mon);
 
             yield return targetSprite.Hud.UpdateHP();
@@ -483,6 +498,10 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
+            if (enemySprite.Mon.MonBase.IsBoss)
+            {
+                defeatedBoss = true;
+            }
             BattleOver(true);
         }
     }
@@ -534,6 +553,12 @@ public class BattleSystem : MonoBehaviour
         //if enemy fainted, give xp to playermon
         if (!fainted.IsPlayermon)
         {
+            //check if boss
+            if (enemySprite.Mon.MonBase.IsBoss)
+            {
+                defeatedBoss = true;
+            }
+
             //gain XP
             int xpYield = playerSprite.Mon.MonBase.BaseXp;
             int enemyLvl = enemySprite.Mon.Level;

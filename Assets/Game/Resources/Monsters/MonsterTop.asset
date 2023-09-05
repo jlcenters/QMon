@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MonsterTop
   m_EditorClassIdentifier: 
   monName: Monster Top
-  description: Not yet implemented.
-  type: 0
+  description: Bossmanmon.
+  type: 6
   frontSprite: {fileID: 369393950089536105, guid: d141493d3dbf8e44981ead3a6cb62d53, type: 3}
   backSprite: {fileID: 21300000, guid: bd30c314befcc0d47a33230741c5e93d, type: 3}
   maxHp: 100
@@ -28,11 +28,11 @@ MonoBehaviour:
   catchRate: 255
   learnableMoves:
   - moveBase: {fileID: 11400000, guid: 0b966b11a481d3c48894631512feb7fa, type: 2}
-    level: 5
+    level: 1
   - moveBase: {fileID: 11400000, guid: 6801335ff6f930640894d2a228b8dbd5, type: 2}
-    level: 5
+    level: 1
   - moveBase: {fileID: 11400000, guid: b32aad522acf49f48a437f2a83bf1ec3, type: 2}
-    level: 5
+    level: 1
   - moveBase: {fileID: 11400000, guid: 10fe606b28793774f8b3c366cf1c06fb, type: 2}
-    level: 5
-  isFirst: 0
+    level: 1
+  isBoss: 1

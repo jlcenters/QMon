@@ -29,10 +29,18 @@ public class MapArea : MonoBehaviour
     public FlowerType flowerType;
 
 
+
+    public List<Monster> WildMons { get { return wildMons; } set { wildMons = value; } }
+    public int EncounterIndex { get; private set; }
+
+
     //TODO: find based on rarity instead of completely random
     public Monster GetRandomWildMon()
     {
-        var wildMon = wildMons[Random.Range(0, wildMons.Count)];
+        //store list index in case of boss
+        EncounterIndex = Random.Range(0, wildMons.Count);
+
+        var wildMon = wildMons[EncounterIndex];
         wildMon.Init();
         return wildMon;
     }
@@ -45,6 +53,12 @@ public class MapArea : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             collision.GetComponent<PlayerController>().flowerType = flowerType;
+
+            //if potentially encountering a boss, 
+            if (flowerType == FlowerType.Boss)
+            {
+
+            }
         }
     }
 }

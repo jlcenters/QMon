@@ -7,6 +7,7 @@ using DG.Tweening;
 public class BattleSprite : MonoBehaviour
 {
     [SerializeField] bool isPlayermon;
+    [SerializeField] float enemonSpriteScale = 2.5f;
     [SerializeField] BattleHud hud;
 
     //public float animDuration;
@@ -58,7 +59,7 @@ public class BattleSprite : MonoBehaviour
         else
         {
             img.sprite = Mon.MonBase.FrontSprite;
-            transform.localScale = new Vector3(2.5f, 2.5f);
+            transform.localScale = new Vector3(enemonSpriteScale, enemonSpriteScale);
         }
 
         hud.SetData(mon);
@@ -130,7 +131,7 @@ public class BattleSprite : MonoBehaviour
         var sequence = DOTween.Sequence();
         sequence.Append(img.DOFade(1, 0.5f));
         sequence.Join(transform.DOLocalMoveY(originalPos.y, 0.5f));
-        sequence.Join(transform.DOScale(new Vector3(1f, 1f, 1f), 0.5f));
+        sequence.Join(transform.DOScale(new Vector3(enemonSpriteScale, enemonSpriteScale, 1f), 0.5f));
         yield return sequence.WaitForCompletion();
     }
 }

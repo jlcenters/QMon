@@ -25,7 +25,7 @@ public class GameOverMenu : MonoBehaviour
     [SerializeField] GameObject confirmQuitMenu;
     [SerializeField] List<TextMeshProUGUI> confirmOptions;
 
-    public event Action OnRestartGame;
+    //public event Action OnRestartGame;
 
     GameOverState state;
 
@@ -80,12 +80,12 @@ public class GameOverMenu : MonoBehaviour
                 currentMenuSelection--;
             }
         }
-        HighlightSelection(menuOptions);
-
+        //HighlightSelection(menuOptions);
+        //TODO: Add retry logic
         //if space is pressed, select highlighted option
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (currentMenuSelection == 0)
+            /*if (currentMenuSelection == 0)
             {
                 currentMenuSelection = 0;
                 OnRestartGame();
@@ -94,7 +94,11 @@ public class GameOverMenu : MonoBehaviour
             {
                 currentMenuSelection = 0;
                 state = GameOverState.Confirm;
-            }
+           }*/
+
+            //QUIT
+            Debug.Log("Goodbye");
+            Application.Quit();
         }
     }
 

@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     public event Action OnPause;
 
     public FlowerType flowerType;
+    public bool bossDefeated;
+    public bool bossCaught;
+
     public PlayerSurpriseEffect surpriseEffect;
 
 
@@ -129,6 +132,7 @@ public class PlayerController : MonoBehaviour
         {
             if (UnityEngine.Random.Range(1, 101) <= 10){
                 isMoving = false;
+
                 //yield return surpriseEffect.EncounterEffect();
 
                 //will utilize the observer design pattern to avoid a circular dependency

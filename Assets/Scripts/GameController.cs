@@ -24,8 +24,13 @@ public class GameController : MonoBehaviour
     [SerializeField] BattleSystem battleSystem;
     [SerializeField] Camera mainCamera;
     [SerializeField] GameOverMenu gameOverMenu;
+    [SerializeField] NPCNarrator narrator;
+
+    [SerializeField] GameOverMenu winGameMenu;
+    [SerializeField] GameObject bossFlowers;
 
     GameState state;
+    bool win;
 
 
 
@@ -39,7 +44,9 @@ public class GameController : MonoBehaviour
         mainMenu.OnStartGame += StartGame;
         playerController.OnPause += PauseGame;
         pauseMenu.OnResume += ResumeGame;
-        gameOverMenu.OnRestartGame += Retry;
+        narrator.OnWinGame += WinGame;
+        
+        //gameOverMenu.OnRestartGame += Retry;
 
         DialogueManager.Instance.OnShowDialogue += () =>
         {
@@ -90,36 +97,53 @@ public class GameController : MonoBehaviour
 
 
 
+    void WinGame()
+    {
+        win = true;
+        state = GameState.GameOverMenu;
+        winGameMenu.gameObject.SetActive(true);
+    }
+
+
+
     void StartBattle()
     {
         state = GameState.Battle;
         battleSystem.gameObject.SetActive(true);
         mainCamera.gameObject.SetActive(false);
 
-        var playerParty = playerController.GetComponent<MonParty>();
-        var qballCount = playerController.GetComponent<Inventory>().Qballs;
 
-        //run through all separate grids in map until you find the one that matches flower types with the player
         Monster wildMon = null;
         MapArea[] grids = FindObjectsOfType<MapArea>();
-        foreach(var grid in grids)
+        foreach (var grid in grids)
         {
             if(grid.flowerType == playerController.flowerType)
             {
+                //run through all separate grids in map until you find the one that matches flower types with the player
                 wildMon = grid.GetRandomWildMon();
+
+
+
+
             }
         }
 
+
+
         //if no grid matched the player flower type, end method without starting battle; else, init mon and start battle
-        if(wildMon == null)
+        if (wildMon == null)
         {
-            Debug.Log("No monster attached");
-        }
+                Debug.Log("No monster attached");
+         }
         else
         {
+            var playerParty = playerController.GetComponent<MonParty>();
+            var qballCount = playerController.GetComponent<Inventory>().Qballs;
             var copy = new Monster(wildMon.MonBase, wildMon.Level);
             battleSystem.StartBattle(playerParty, copy, qballCount);
         }
+
+
     }
 
 
@@ -129,6 +153,24 @@ public class GameController : MonoBehaviour
         playerController.surpriseEffect.RemoveEffect();
         if (won)
         {
+            //check if boss was defeated or caught
+            if (battleSystem.bossBattle)
+            {
+                if (battleSystem.defeatedBoss)
+                {
+                    playerController.bossDefeated = true;
+                    //deactivates boss flowers
+                    bossFlowers.SetActive(false);
+                }
+                else if (battleSystem.caughtBoss)
+                {
+                    playerController.bossCaught = true;
+                    //deactivates boss flowers
+                    bossFlowers.SetActive(false);
+                }
+
+            }
+
             playerController.GetComponent<Inventory>().Qballs = battleSystem.QballCount;
             state = GameState.FreeRoam;
             battleSystem.gameObject.SetActive(false);
@@ -169,7 +211,14 @@ public class GameController : MonoBehaviour
         }
         else if (state == GameState.GameOverMenu)
         {
-            gameOverMenu.HandleUpdate();
+            if (win)
+            {
+                winGameMenu.HandleUpdate();
+            }
+            else
+            {
+                gameOverMenu.HandleUpdate();
+            }
         }
     }
 }

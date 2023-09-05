@@ -27,7 +27,7 @@ SpriteAtlas:
       blockOffset: 1
       allowAlphaSplitting: 0
       enableRotation: 1
-      enableTightPacking: 1
+      enableTightPacking: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
@@ -49,13 +49,11 @@ SpriteAtlas:
   - {fileID: 8991121656767578558, guid: 70af20908ef5f204ab5d3f01756b2794, type: 3}
   - {fileID: 21300000, guid: e67953b0e87d4b641b807e45bf106247, type: 3}
   - {fileID: -298814603488766600, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
-  - {fileID: 7876286444195498708, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: 8597038059926437060, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: 7540785976029907351, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: -474715964208991622, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: -3541530809744196233, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: -8311286502563729095, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
-  - {fileID: -2909911866551093212, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: -1127286166272222221, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: 7544662151786227277, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
   - {fileID: -4477631751444661210, guid: eb7290e09de2f9742a26958292a9f645, type: 3}
@@ -108,11 +106,14 @@ SpriteAtlas:
   - {fileID: -1036803423561282982, guid: f3e51763ac787fc4da0e17df196f7986, type: 3}
   - {fileID: -3728315759926920429, guid: e78017735267bbd4c9fecbaed436e56d, type: 3}
   - {fileID: -1885954285281757752, guid: e78017735267bbd4c9fecbaed436e56d, type: 3}
+  - {fileID: 2970903873238002373, guid: cd6f2ae36e6f29d4b8fca656597a183d, type: 3}
+  - {fileID: -4913078199100076594, guid: cd6f2ae36e6f29d4b8fca656597a183d, type: 3}
   - {fileID: 21300000, guid: 962480f3b967ee74ab66ae47a2ea0a56, type: 3}
   - {fileID: 21300000, guid: 4526d2148d1d7ee40b47bb4abd96286e, type: 3}
   - {fileID: 21300000, guid: bd30c314befcc0d47a33230741c5e93d, type: 3}
   - {fileID: 1060229153188212524, guid: 396c7c44466390844a4ba5e0673fd872, type: 3}
   - {fileID: 1593663132497002624, guid: 396c7c44466390844a4ba5e0673fd872, type: 3}
+  - {fileID: -5387151258837038248, guid: 2ca63a053144a09498a155b58bd243bc, type: 3}
   - {fileID: -1475295485403355235, guid: a2721285cfc195048b28be40b0786a3c, type: 3}
   - {fileID: -4695550397023580541, guid: a2721285cfc195048b28be40b0786a3c, type: 3}
   - {fileID: -7166590462537888343, guid: 79c61d9500006b7458fe2989f025a629, type: 3}
@@ -283,13 +284,11 @@ SpriteAtlas:
   - BG-Big-Trees_1
   - New-Scooter-Ally
   - New-Player_11
-  - New-Player_10
   - New-Player_2
   - New-Player_3
   - New-Player_0
   - New-Player_1
   - New-Player_6
-  - New-Player_7
   - New-Player_4
   - New-Player_5
   - New-Player_8
@@ -342,11 +341,14 @@ SpriteAtlas:
   - Frootford-Ally_5
   - Worm-Enemy_0
   - Worm-Enemy_1
+  - Updated-Player_10
+  - Updated-Player_7
   - BG-Shrubbery-Old-1
   - Mom
   - Monster-Top-Ally
   - New-Mom_0
   - New-Mom_1
+  - Mr-Handsome_0
   - Fire-Flower_0
   - Fire-Flower_1
   - BG-Shrubbery_13

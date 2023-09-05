@@ -40,10 +40,14 @@ public class MonsterBase : ScriptableObject
 
     [SerializeField] List<LearnableMove> learnableMoves;
 
-    //checks to see if mon is player's current active
-    public bool isFirst;
+    /*checks to see if mon is player's current active
+    public bool isFirst;*/
 
     public static int maxMoves = 4;
+
+    //check if boss mon
+    [SerializeField] bool isBoss;
+
 
 
 
@@ -120,6 +124,7 @@ public class MonsterBase : ScriptableObject
     {
         get { return learnableMoves; }
     }
+    public bool IsBoss { get { return isBoss; } }
 }
 
 
