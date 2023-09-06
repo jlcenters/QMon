@@ -32,6 +32,10 @@ public class GameController : MonoBehaviour
     public Gravestone gravestone;
     [SerializeField] GameObject graveObject;
 
+
+    [SerializeField] NPCController tutorialDialogue;
+    bool openingScene;
+
     GameState state;
     bool win;
 
@@ -41,6 +45,7 @@ public class GameController : MonoBehaviour
     private void Start()
     {
         Debug.Log("Note: currently cannot restart game upon game over");
+        openingScene = true;
 
         playerController.OnEncounter += StartBattle;
         battleSystem.OnBattleOver += EndBattle;
@@ -69,9 +74,15 @@ public class GameController : MonoBehaviour
 
     void StartGame()
     {
-        state = GameState.FreeRoam;
-        mainMenu.gameObject.SetActive(false);
-        mainCamera.gameObject.SetActive(true);
+        if (openingScene)
+        {
+            tutorialDialogue.Interact();
+            openingScene = false;
+        }
+            state = GameState.FreeRoam;
+            mainMenu.gameObject.SetActive(false);
+            mainCamera.gameObject.SetActive(true);
+
     }
 
     void PauseGame()

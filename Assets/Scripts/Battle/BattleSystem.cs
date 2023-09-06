@@ -648,6 +648,8 @@ public class BattleSystem : MonoBehaviour
                 if(moveIndex == MonsterBase.maxMoves)
                 {
                     StartCoroutine(dialogueBox.TypeDialogue($"{playerSprite.Mon.MonBase.MonName} did not learn {moveToLearn.MoveName}."));
+                    moveToLearn = null;
+                    state = BattleState.RunningTurn;
                 }
                 else
                 {
