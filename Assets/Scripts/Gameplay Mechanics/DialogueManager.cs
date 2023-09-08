@@ -18,6 +18,7 @@ public class DialogueManager : MonoBehaviour
     Dialogue lines;
 
     public bool isTyping;
+    public bool isSign;
 
 
     //to reference instance throughout the game
@@ -30,19 +31,40 @@ public class DialogueManager : MonoBehaviour
     //called when state has changed in game controller
     public void HandleUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !isTyping)
+        if (isSign)
         {
-            ++currentLine;
-            if(currentLine < lines.Lines.Count)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                StartCoroutine(TypeDialogue(lines.Lines[currentLine]));
+                ++currentLine;
+                if(currentLine < lines.Lines.Count)
+                {
+                    StartCoroutine(PrintText(lines.Lines[currentLine]));
+                }
+                else
+                {
+                    currentLine = 0;
+                    dialogueBox.SetActive(false);
+                    OnCloseDialogue.Invoke();
+                }
             }
-            else
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Space) && !isTyping)
             {
-                currentLine = 0;
-                dialogueBox.SetActive(false);
-                OnCloseDialogue.Invoke();
+                ++currentLine;
+                if (currentLine < lines.Lines.Count)
+                {
+                    StartCoroutine(TypeDialogue(lines.Lines[currentLine]));
+                }
+                else
+                {
+                    currentLine = 0;
+                    dialogueBox.SetActive(false);
+                    OnCloseDialogue.Invoke();
+                }
             }
+
         }
     }
 
@@ -52,6 +74,7 @@ public class DialogueManager : MonoBehaviour
     public IEnumerator ShowDialogue(Dialogue dialogue)
     {
         yield return new WaitForEndOfFrame();
+        isSign = false;
         lines = dialogue;
         OnShowDialogue.Invoke();
 
@@ -60,6 +83,23 @@ public class DialogueManager : MonoBehaviour
         StartCoroutine(TypeDialogue(dialogue.Lines[0]));
     }
 
+    public IEnumerator ShowText(Dialogue dialogue)
+    {
+        yield return new WaitForEndOfFrame();
+        isSign = true;
+        lines = dialogue;
+        OnShowDialogue.Invoke();
+
+        dialogueBox.SetActive(true);
+
+        StartCoroutine(PrintText(lines.Lines[0]));
+    }
+
+    public IEnumerator PrintText(string line)
+    {
+        dialogue.text = line;
+        yield return new WaitForSeconds(0.25f);
+    }
 
 
     public IEnumerator TypeDialogue(string line)

@@ -6,6 +6,7 @@ using TMPro;
 public class MoveSelectionUI : MonoBehaviour
 {
     [SerializeField] List<TMP_Text> moveTexts;
+    [SerializeField] TextMeshProUGUI description;
     public Color highlightColor;
     int currentSelection = 0;
 
@@ -19,7 +20,7 @@ public class MoveSelectionUI : MonoBehaviour
         moveTexts[currentMoves.Count].text = newMove.MoveName;
     }
 
-    public void HandleMoveSelection(System.Action<int> onSelect)
+    public void HandleMoveSelection(System.Action<int> onSelect, System.Action<int> onUpdate)
     {
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
@@ -31,7 +32,7 @@ public class MoveSelectionUI : MonoBehaviour
         }
         currentSelection = Mathf.Clamp(currentSelection, 0, MonsterBase.maxMoves);
 
-        UpdateMoveSelection(currentSelection);
+        UpdateMoveSelection(currentSelection, onUpdate);
 
         //invokes action which was passed in param
         if (Input.GetKeyDown(KeyCode.Space))
@@ -40,13 +41,14 @@ public class MoveSelectionUI : MonoBehaviour
         }
     }
 
-    public void UpdateMoveSelection(int currentSelection)
+    public void UpdateMoveSelection(int currentSelection, System.Action<int> onUpdate)
     {
         for(int i = 0; i < moveTexts.Count; i++)
         {
             if(i == currentSelection)
             {
                 moveTexts[i].color = highlightColor;
+                onUpdate.Invoke(i);
             }
             else
             {

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Headbutt
   m_EditorClassIdentifier: 
   moveName: Headbutt
-  description: Scooter
+  description: Monster bashes opponent with its large head.
   type: 4
   power: 17
   accuracy: 85

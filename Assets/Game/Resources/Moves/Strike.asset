@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Strike
   m_EditorClassIdentifier: 
   moveName: Strike
-  description: 
+  description: Monster strikes opponent quickly.
   type: 4
   power: 3
   accuracy: 90

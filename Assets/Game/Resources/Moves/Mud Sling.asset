@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mud Sling
   m_EditorClassIdentifier: 
   moveName: Mud Sling
-  description: Sling a ball of mud at the opponent
+  description: Monster slings mud at opponent. Easier said than done.
   type: 4
   power: 9
   accuracy: 75

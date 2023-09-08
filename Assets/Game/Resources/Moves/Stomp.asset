@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Stomp
   m_EditorClassIdentifier: 
   moveName: Stomp
-  description: Crushing opponent
+  description: Monster crushes opponent with its large foot.
   type: 4
   power: 10
   accuracy: 90

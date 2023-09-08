@@ -93,9 +93,6 @@ public class Monster
         Hp = MaxHp;
         ResetStatBoost();
         StatusChanges = new Queue<string>();
-        Debug.Log($"{ MonBase.MonName} STATS:");
-        Debug.Log($"current hp: {MaxHp}; current attack: {Attack}; current block: {Block}; current element: {Element}; current speed: {Speed}");
-
     }
 
     //Initializing stats referencing the base
@@ -106,6 +103,7 @@ public class Monster
         Stats.Add(Stat.Block, MonBase.Block + (2 * Level));
         Stats.Add(Stat.Element, MonBase.Element + (2 * Level));
         Stats.Add(Stat.Speed, MonBase.Speed + (2 * Level));
+        Stats.Add(Stat.Health, MonBase.MaxHp + (2 * Level));
 
         //check peak stat; edit stat accordingly
         if (MonBase.PeakStat == Stat.Attack)
@@ -159,22 +157,44 @@ public class Monster
             var stat = statBoost.stat;
             var boost = statBoost.boost;
 
-            //add boost value to dictionary
-            StatBoost[stat] = Mathf.Clamp(StatBoost[stat] + boost, -6, 6);
+
             //add to queue each status change to be displayed in UI
-            if(boost > 0)
+            if(stat == Stat.Health)
             {
-                StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} rose!");
+                
+                if(boost > 0)
+                {
+                    StatusChanges.Enqueue("skip");
+                }
+                else
+                {
+                    if(StatusChanges == null)
+                    {
+                        StatusChanges = new Queue<string>();
+                    }
+                    StatusChanges.Enqueue("skip");
+                }
             }
             else
             {
-                if(StatusChanges == null)
+                if (boost > 0)
                 {
-                    StatusChanges = new Queue<string>();
-                }
-                StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} fell!");
+                    //add boost value to dictionary
+                    StatBoost[stat] = Mathf.Clamp(StatBoost[stat] + boost, -6, 6);
 
+                    StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} rose!");
+                }
+                else
+                {
+                    if (StatusChanges == null)
+                    {
+                        StatusChanges = new Queue<string>();
+                    }
+                    StatusChanges.Enqueue($"{MonBase.MonName}'s {stat} fell!");
+
+                }
             }
+
         }
     }
 

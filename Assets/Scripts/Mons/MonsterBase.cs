@@ -172,6 +172,7 @@ public enum Stat
     Block,
     Element,
     Speed,
+    Health,
     None
 }
 
@@ -187,7 +188,7 @@ public class TypeChart
         new float[] {.5f, 2f, 1f, 1f, 1f, 1f}, //GRASS
         new float[] {1f, 1f, 1f, 1f, 1f, 1f}, //NORMAL
         new float[] {1f, 1f, 1f, 1f, .5f, 2f}, //GHOST
-        new float[] {1f, 1f, 1f, 1f, .5f, 2f } //SPECIAL
+        new float[] {1f, 1f, 1f, 1f, .5f, 1f } //SPECIAL
 
         //KEY: 1- normal effectiveness, .5- not very effective, 2- super effective, 0- no effect
     };

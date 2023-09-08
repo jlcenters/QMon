@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Super Ball
   m_EditorClassIdentifier: 
   moveName: Super Ball
-  description: Type changes depending on mon's element.
+  description: A large, powerful ball, concentrated with the element of the weilder
+    is thrown at the opponent.
   type: 6
   power: 45
   accuracy: 100

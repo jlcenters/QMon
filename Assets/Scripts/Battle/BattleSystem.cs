@@ -440,6 +440,34 @@ public class BattleSystem : MonoBehaviour
         //if move is a status effect, run effects ienumerator; else, attack
         if(move.Base.Category == MoveCategory.Status)
         {
+            foreach(StatBoost stat in move.Base.Effects.Boosts)
+            {
+                if(stat.stat == Stat.Health)
+                {
+                    if(stat.boost > 0)
+                    {
+                        srcSprite.Mon.Hp += 10;
+                        if(srcSprite.Mon.Hp > srcSprite.Mon.MaxHp)
+                        {
+                            srcSprite.Mon.Hp = srcSprite.Mon.MaxHp;
+                        }
+                        yield return srcSprite.Hud.UpdateHP();
+                        yield return dialogueBox.TypeDialogue("blank feels refreshed!");
+
+                    }
+                    else
+                    {
+                        srcSprite.Mon.Hp -= 10;
+                        if (srcSprite.Mon.Hp < 0)
+                        {
+                            srcSprite.Mon.Hp = 0;
+                        }
+                        yield return srcSprite.Hud.UpdateHP();
+                        yield return dialogueBox.TypeDialogue("blank was hurt by the recoil!");
+
+                    }
+                }
+            }
             yield return RunMoveEffects(move, srcSprite.Mon, targetSprite.Mon);
         }
         else
@@ -471,15 +499,16 @@ public class BattleSystem : MonoBehaviour
             if (move.Base.Target == MoveTarget.Foe)
             {
                 //foreach (var boost in target.StatusChanges)
-                //{
-                    
-                //}
+                //{                }
                 target.ApplyBoosts(effects.Boosts);
 
             }
             else
             {
                 source.ApplyBoosts(effects.Boosts);
+                if(effects.Boosts[1].stat == Stat.Health)
+                {
+                }
             }
 
             //Show status changes for source and target, if any
@@ -522,6 +551,10 @@ public class BattleSystem : MonoBehaviour
     {
         while (mon.StatusChanges.Count > 0)
         {
+            if (mon.StatusChanges.Equals("skip"))
+            {
+                mon.StatusChanges.Dequeue();
+            }
             var message = mon.StatusChanges.Dequeue();
             yield return dialogueBox.TypeDialogue(message);
             yield return new WaitForSeconds(0.5f);
@@ -640,6 +673,18 @@ public class BattleSystem : MonoBehaviour
         }
         else if(state == BattleState.ForgetMove)
         {
+            //action event to show move description
+            Action<int> onMoveUpdate = (moveIndex) =>
+            {
+                List<Move> movesList = new List<Move>();
+                foreach(Move move in playerSprite.Mon.Moves)
+                {
+                    movesList.Add(move);
+                }
+                movesList.Add(new Move(moveToLearn));
+                dialogueBox.SetDialogue(movesList[moveIndex].Base.Description);
+            };
+
             //action will take the data from the handle move selection method and decide which move the player wants to forget
             Action<int> onMoveSelect = (moveIndex) =>
             {
@@ -660,7 +705,9 @@ public class BattleSystem : MonoBehaviour
                     state = BattleState.RunningTurn;
                 }
             };
-            moveSelectUI.HandleMoveSelection(onMoveSelect);
+
+
+            moveSelectUI.HandleMoveSelection(onMoveSelect, onMoveUpdate);
         }
     }
 
@@ -800,7 +847,6 @@ public class BattleSystem : MonoBehaviour
             dialogueBox.EnableMoveSelector(false);
             dialogueBox.EnableDialogueText(true);
             previousState = BattleState.RunningTurn;
-            Debug.Log("attack chosen");
             StartCoroutine(RunTurns(BattleAction.Move));
         }
         else if (Input.GetKeyDown(KeyCode.Backspace))

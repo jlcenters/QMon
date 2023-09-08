@@ -27,7 +27,13 @@ MonoBehaviour:
   speed: 4
   catchRate: 255
   learnableMoves:
-  - moveBase: {fileID: 11400000, guid: a777acb7173b6ae4bb60a90fb021ba08, type: 2}
-    level: 0
+  - moveBase: {fileID: 11400000, guid: c68109f013b00874988a5efbebc1e7c6, type: 2}
+    level: 5
+  - moveBase: {fileID: 11400000, guid: 89c226e0728f43245bf99d88c517ae67, type: 2}
+    level: 5
+  - moveBase: {fileID: 11400000, guid: 1dd14044df3dfb540be1982734a14104, type: 2}
+    level: 5
+  - moveBase: {fileID: 11400000, guid: ac6064248f7b43d46ad991c002e8c38b, type: 2}
+    level: 5
   isBoss: 0
   isGhost: 1
