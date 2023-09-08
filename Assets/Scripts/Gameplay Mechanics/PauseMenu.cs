@@ -41,6 +41,7 @@ public class PauseMenu : MonoBehaviour
     private void Awake()
     {
         partyScreen.Init();
+        currentMenuSelection = 0;
         SetUpPauseMenu();
     }
 
@@ -159,6 +160,7 @@ public class PauseMenu : MonoBehaviour
                 else
                 {
                     partyScreen.SetMessageText("Choose which mon to release.");
+                    currentMenuSelection = 0;
                     state = PauseState.Release;
                 }
 
@@ -307,13 +309,23 @@ public class PauseMenu : MonoBehaviour
         //release
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            firstMonSelection = 0;
-            playerParty.RemoveMon(playerParty.Monsters[firstMonSelection]);
-            partyScreen.SetPartyData(playerParty.Monsters);
-            HighlightSelection(partyMenuOptions);
-            partyScreen.SetMessageText($"Goodbye, {playerParty.Monsters[firstMonSelection].MonBase.MonName}!");
+            var monChosen = playerParty.Monsters[firstMonSelection];
+
+            if (monChosen.MonBase.IsBoss)
+            {
+                List<string> dialogueList = new List<string>{ "That's too dangerous.", "Actually, nevermind.", "You'd really unleash this upon your town?", "Your gut is telling you not to.", "That's a terrible idea." };
+                partyScreen.SetMessageText(dialogueList[UnityEngine.Random.Range(0, dialogueList.Count)]);
+            }
+            else
+            {
+                firstMonSelection = 0;
+                playerParty.RemoveMon(monChosen);
+                partyScreen.SetPartyData(playerParty.Monsters);
+                HighlightSelection(partyMenuOptions);
+                partyScreen.SetMessageText($"Goodbye, {monChosen.MonBase.MonName}!");
+            }
             state = PauseState.Party;
-            Debug.Log("releasing");
+
         }
 
     }
